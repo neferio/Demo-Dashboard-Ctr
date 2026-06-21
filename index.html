@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CtrlS Mumbai — Procurement Dashboard</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:       #013c66;
+  --navy-dark:  #012d4d;
+  --navy-light: #0d5a8a;
+  --blue:       #2060c8;
+  --blue-light: #0d72cc;
+  --blue-bg:    #ecf3fd;
+  --green:      #47c981;
+  --green-bg:   rgba(71,201,129,0.12);
+  --green-bd:   rgba(71,201,129,0.3);
+  --amber:      #f59e0b;
+  --amber-bg:   rgba(245,158,11,0.12);
+  --amber-bd:   rgba(245,158,11,0.3);
+  --red:        #e53e3e;
+  --red-bg:     rgba(229,62,62,0.10);
+  --red-bd:     rgba(229,62,62,0.28);
+  --grey:       #64748b;
+  --page-bg:    #dce9f9;
+  --white:      #ffffff;
+  --surface:    #ffffff;
+  --surface-2:  #f4f8ff;
+  --border:     #d0dff5;
+  --border-2:   #b8cfe8;
+  --text:       #0f2a45;
+  --text-sub:   #3a5a7a;
+  --text-muted: #6b8aaa;
+  --font: 'Inter',system-ui,-apple-system,sans-serif;
+}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+body{background:var(--page-bg);color:var(--text);font-family:var(--font);font-size:13px;line-height:1.5;min-height:100vh}
+
+/* ── HEADER ── */
+.header{background:var(--navy);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:200}
+.header-left{display:flex;align-items:center;gap:12px}
+.header-logo{display:flex;align-items:center;gap:8px}
+.header-logo svg{width:28px;height:28px}
+.header-divider{width:1px;height:20px;background:rgba(255,255,255,0.2)}
+.header-title{font-size:14px;font-weight:600;color:#fff}
+.header-sub{font-size:11px;color:rgba(255,255,255,0.55);margin-top:1px}
+.header-right{display:flex;align-items:center;gap:16px}
+/* project dropdown */
+.proj-select-wrap{position:relative;display:flex;align-items:center}
+.proj-select{appearance:none;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.22);border-radius:7px;color:#fff;font-size:13px;font-weight:600;font-family:var(--font);padding:6px 30px 6px 12px;cursor:pointer;outline:none;transition:background .15s;min-width:160px}
+.proj-select:hover,.proj-select:focus{background:rgba(255,255,255,0.2)}
+.proj-select option{background:#013c66;color:#fff;font-weight:500}
+.proj-select-arrow{position:absolute;right:10px;pointer-events:none;color:rgba(255,255,255,0.7);font-size:10px}
+.last-updated{font-size:11px;color:rgba(255,255,255,0.6);display:flex;align-items:center;gap:6px}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.35}}
+
+/* ── STATE SCREENS ── */
+.state-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;height:calc(100vh - 52px);gap:14px;color:var(--text-muted)}
+.spinner{width:34px;height:34px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── MAIN ── */
+.main{padding:22px 28px;max-width:1600px;margin:0 auto}
+
+/* ── KPI STRIP ── */
+.kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+.kpi-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:15px 18px;border-top:3px solid var(--navy)}
+.kpi-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--text-muted);margin-bottom:7px}
+.kpi-value{font-size:26px;font-weight:700;color:var(--text);line-height:1}
+.kpi-sub{font-size:11px;color:var(--text-muted);margin-top:5px}
+
+/* ── SECTION HEADER ── */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-sub)}
+
+/* ── PACKAGE LIST (full-width rows) ── */
+.pkg-list{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.pkg-row{background:var(--white);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:border-color .15s,box-shadow .15s;overflow:hidden}
+.pkg-row:hover{border-color:var(--blue);box-shadow:0 2px 12px rgba(32,96,200,0.12)}
+.pkg-row.active{border-color:var(--blue);box-shadow:0 0 0 2px rgba(32,96,200,0.18)}
+.pkg-row-inner{display:grid;grid-template-columns:200px 1fr 160px 160px 160px 160px;align-items:center;gap:0;padding:0}
+
+/* cells */
+.pr-cell{padding:14px 16px;border-right:1px solid var(--border)}
+.pr-cell:last-child{border-right:none}
+.pr-name-cell{}
+.pkg-name{font-size:14px;font-weight:700;color:var(--text)}
+.pkg-meta{font-size:11px;color:var(--text-muted);margin-top:2px}
+
+/* progress cell */
+.pr-progress-cell{padding:12px 16px;border-right:1px solid var(--border)}
+.prog-labels{display:flex;justify-content:space-between;margin-bottom:5px;font-size:11px}
+.prog-track{height:7px;background:var(--blue-bg);border-radius:4px;position:relative;overflow:hidden}
+.prog-expected-fill{position:absolute;top:0;left:0;height:100%;background:rgba(32,96,200,0.15);border-radius:4px}
+.prog-actual-fill{position:absolute;top:0;left:0;height:100%;border-radius:4px;transition:width .5s ease}
+.prog-actual-fill.green{background:var(--green)}
+.prog-actual-fill.amber{background:var(--amber)}
+.prog-actual-fill.red{background:var(--red)}
+.prog-bottom{display:flex;justify-content:space-between;margin-top:4px;font-size:11px}
+
+/* stat cells */
+.pr-stat{text-align:center}
+.pr-stat-val{font-size:16px;font-weight:700;color:var(--text)}
+.pr-stat-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-top:1px}
+.pr-stat-sub{font-size:10px;color:var(--text-muted);margin-top:1px}
+
+/* date cell */
+.pr-date-val{font-size:12px;font-weight:600;color:var(--text)}
+.pr-date-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:2px}
+.pr-date-val.overrun{color:var(--red)}
+.pr-slip{font-size:10px;margin-top:2px;font-weight:600}
+.pr-slip.late{color:var(--red)}
+.pr-slip.ok{color:var(--green)}
+
+/* expand arrow - hidden, click whole row opens modal */
+.pr-arrow{display:none}
+
+/* ── STATUS BADGES ── */
+.status-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.status-badge.high-risk{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd)}
+.status-badge.medium-risk{background:var(--amber-bg);color:#92600a;border:1px solid var(--amber-bd)}
+.status-badge.low-risk{background:var(--green-bg);color:#1a7a4a;border:1px solid var(--green-bd)}
+.status-badge.on-track{background:var(--green-bg);color:#1a7a4a;border:1px solid var(--green-bd)}
+.status-badge.delayed{background:var(--amber-bg);color:#92600a;border:1px solid var(--amber-bd)}
+
+/* ── MODAL OVERLAY ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(1,44,76,0.55);z-index:500;overflow:hidden}
+.modal-overlay.visible{display:block}
+.modal{position:absolute;inset:16px;background:var(--white);border-radius:12px;box-shadow:0 24px 64px rgba(0,0,0,0.3);overflow:hidden;display:flex;flex-direction:column}
+.modal-header{background:var(--navy);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-header-left{display:flex;flex-direction:column}
+.modal-title{color:#fff;font-size:15px;font-weight:700}
+.modal-sub{color:rgba(255,255,255,0.6);font-size:11px;margin-top:2px}
+.modal-header-right{display:flex;align-items:center;gap:8px}
+.modal-zoom-btn{width:28px;height:28px;border-radius:6px;background:rgba(255,255,255,0.12);border:none;color:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:background .15s;font-weight:600}
+.modal-zoom-btn:hover{background:rgba(255,255,255,0.22)}
+.modal-zoom-label{font-size:11px;color:rgba(255,255,255,0.7);min-width:34px;text-align:center}
+.modal-close{width:28px;height:28px;border-radius:6px;background:rgba(255,255,255,0.12);border:none;color:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:background .15s;margin-left:8px}
+.modal-close:hover{background:rgba(239,68,68,0.4)}
+.modal-body{background:var(--page-bg);overflow-y:auto;flex:1;overflow-x:hidden}
+.modal-body-inner{padding:20px;transform-origin:top center;transition:transform .15s}
+
+/* ── CRITICAL SECTION ── */
+.critical-section{margin-bottom:20px}
+.critical-header{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.critical-dot{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 6px var(--red);flex-shrink:0}
+.critical-title-text{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--text-sub)}
+.critical-legend{display:flex;align-items:center;gap:12px;margin-left:auto;font-size:10px;color:var(--text-muted)}
+.critical-legend span{display:flex;align-items:center;gap:4px}
+.critical-legend .ld{width:10px;height:3px;border-radius:2px}
+.critical-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.critical-card{background:var(--white);border:1px solid var(--border);border-radius:9px;padding:13px 15px;border-left:3px solid transparent}
+.critical-card.high-risk{border-left-color:var(--red)}
+.critical-card.delayed{border-left-color:var(--amber)}
+.critical-card.low-risk{border-left-color:var(--green)}
+.critical-floor{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
+.critical-vendor{font-size:10px;color:var(--text-muted);margin-bottom:10px}
+.critical-row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px}
+.critical-row .lbl{color:var(--text-muted)}
+.critical-row .val{font-weight:600;color:var(--text)}
+.critical-row .val.red{color:var(--red)}
+.critical-row .val.amber{color:var(--amber)}
+.critical-row .val.green{color:#1a7a4a}
+/* qty progress in critical card */
+.qty-bar-wrap{margin-top:8px}
+.qty-bar-label{display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);margin-bottom:3px}
+.qty-bar-track{height:5px;background:var(--blue-bg);border-radius:3px;overflow:hidden}
+.qty-bar-fill{height:100%;border-radius:3px;background:var(--amber)}
+.qty-bar-fill.full{background:var(--green)}
+.qty-bar-fill.none{background:var(--red)}
+
+/* ── VENDOR TABS ── */
+.vendor-tabs-wrap{background:var(--white);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.vendor-tabs-header{display:flex;border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;background:var(--surface-2)}
+.vendor-tabs-header::-webkit-scrollbar{display:none}
+.vendor-tab{padding:10px 18px;font-size:12px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;color:var(--text-muted);white-space:nowrap;transition:color .15s,border-color .15s;margin-bottom:-1px;background:none;border-top:none;border-left:none;border-right:none}
+.vendor-tab:hover{color:var(--text)}
+.vendor-tab.active{color:var(--blue);border-bottom-color:var(--blue);font-weight:600}
+.vendor-body{padding:18px}
+
+/* PO sub-sections within vendor */
+.po-section{margin-bottom:18px}
+.po-section:last-child{margin-bottom:0}
+.po-header{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--blue-bg);border-radius:7px;margin-bottom:10px;border:1px solid var(--border)}
+.po-number{font-size:11px;font-weight:700;color:var(--navy)}
+.po-desc{font-size:11px;color:var(--text-sub)}
+.po-badge{margin-left:auto}
+
+/* ── FLOOR TABLE ── */
+.floor-table{width:100%;border-collapse:collapse}
+.floor-table th{text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);padding:0 10px 8px;border-bottom:2px solid var(--border)}
+.floor-table th.right{text-align:right}
+.floor-table td{padding:10px;border-bottom:1px solid var(--border);vertical-align:middle}
+.floor-table tr:last-child td{border-bottom:none}
+.floor-table tr:hover td{background:var(--blue-bg)}
+.floor-name-big{font-size:13px;font-weight:700;color:var(--text)}
+.floor-status-row{margin-top:3px}
+
+/* inline bar */
+.inline-bar{display:flex;align-items:center;gap:8px}
+.bar-track{flex:1;height:6px;background:var(--blue-bg);border-radius:3px;position:relative;min-width:70px}
+.bar-expected-marker{position:absolute;top:-3px;height:12px;width:2px;background:rgba(32,96,200,0.4);border-radius:1px}
+.bar-fill{height:100%;border-radius:3px}
+.bar-fill.green{background:var(--green)}
+.bar-fill.amber{background:var(--amber)}
+.bar-fill.red{background:var(--red)}
+.bar-pct{font-size:12px;font-weight:700;min-width:36px;text-align:right}
+.bar-pct.green{color:#1a7a4a}
+.bar-pct.amber{color:#92600a}
+.bar-pct.red{color:var(--red)}
+
+/* qty delivered cell */
+.qty-cell{text-align:center}
+.qty-big{font-size:14px;font-weight:700;color:var(--text)}
+.qty-frac{font-size:10px;color:var(--text-muted)}
+.qty-mini-bar{height:4px;background:var(--blue-bg);border-radius:2px;margin-top:4px;overflow:hidden}
+.qty-mini-fill{height:100%;border-radius:2px}
+
+/* date cell */
+.date-main{font-size:12px;font-weight:600}
+.date-main.overrun{color:var(--red)}
+.date-main.ok{color:var(--text)}
+.date-slip{font-size:10px;font-weight:600;margin-top:2px}
+.date-slip.late{color:var(--red)}
+.date-slip.ok{color:var(--green)}
+
+/* milestone */
+.milestone-cell{font-size:10px;max-width:180px}
+.milestone-delayed{color:var(--red);font-weight:600}
+.milestone-ongoing{color:var(--text-muted)}
+
+/* vendor summary strip */
+.vendor-summary-strip{display:flex;gap:8px;font-size:11px;color:var(--text-muted);margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.vendor-summary-strip strong{color:var(--text);font-weight:700}
+.vendor-summary-strip .sep{color:var(--border-2)}
+
+/* ── LEGEND BAR GUIDE ── */
+.table-legend{display:flex;align-items:center;gap:14px;font-size:10px;color:var(--text-muted);margin-bottom:10px;flex-wrap:wrap}
+.table-legend span{display:flex;align-items:center;gap:4px}
+.tl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+@media(max-width:900px){
+  .main{padding:14px}
+  .kpi-strip{grid-template-columns:repeat(2,1fr)}
+  .pkg-row-inner{grid-template-columns:1fr}
+  .pr-cell{border-right:none;border-bottom:1px solid var(--border)}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <div class="header-logo">
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="32" height="32" rx="6" fill="rgba(255,255,255,0.12)"/>
+        <path d="M8 10 L16 22 L24 10" stroke="#47c981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M12 10 L16 17 L20 10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.7"/>
+      </svg>
+    </div>
+    <div class="header-divider"></div>
+    <div>
+      <div class="header-sub">CtrlS Dashboard</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="proj-select-wrap">
+      <select class="proj-select" id="proj-select" onchange="switchProject(this.value)">
+        <option value="CtrlS Mumbai">CtrlS Mumbai</option>
+      </select>
+      <span class="proj-select-arrow">▾</span>
+    </div>
+    <div class="last-updated">
+      <span class="live-dot"></span>
+      <span id="last-updated-text">—</span>
+    </div>
+  </div>
+</header>
+
+<div class="state-screen" id="loading-state">
+  <div class="spinner"></div>
+  <p>Loading dashboard data…</p>
+</div>
+<div class="state-screen" id="error-state" style="display:none">
+  <p style="font-size:20px">⚠</p>
+  <p id="error-message">Failed to load data.</p>
+</div>
+
+<div class="main" id="main-content" style="display:none">
+  <div class="kpi-strip" id="kpi-strip"></div>
+  <div class="section-header">
+    <div class="section-title">Packages — Click any row to drill down</div>
+  </div>
+  <div class="pkg-list" id="pkg-list"></div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <div class="modal-title" id="modal-title">—</div>
+        <div class="modal-sub" id="modal-sub">—</div>
+      </div>
+      <div class="modal-header-right">
+        <button class="modal-zoom-btn" onclick="zoomModal(-1)" title="Zoom out">−</button>
+        <span class="modal-zoom-label" id="zoom-label">100%</span>
+        <button class="modal-zoom-btn" onclick="zoomModal(1)" title="Zoom in">+</button>
+        <button class="modal-close" id="modal-close" title="Close">✕</button>
+      </div>
+    </div>
+    <div class="modal-body" id="modal-body-scroll"><div class="modal-body-inner" id="modal-body"></div></div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────────────────
+const ENDPOINT_URL = null; // TODO: replace with live multi-project endpoint
+
+// ── ALL PROJECTS DATA ────────────────────────────────────────────────────
+// Each key is a project name; value is the full JSON response for that project.
+// When live endpoint is ready, loadData() fetches all projects and populates this.
+const ALL_PROJECTS = {
+  "CtrlS Mumbai": {"last_updated":"2026-06-21T00:00:00Z","error":null,"data":{"project":"CtrlS Mumbai","packages":[{"package":"CSS","total_pos":2,"total_vendors":1,"total_items":5,"total_qty":38,"expected_pct":91.92,"actual_pct":34.36,"status":"High Risk","planned_start_date":"10-02-2026","actual_start_date":"10-02-2026","planned_end_date":"28-07-2026","actual_end_date":null,"forecasted_end_date":"01-12-2026","expected_qty_till_date":18,"actual_qty_till_date":0,"top_critical_items":[{"item_name":"CSS - GF+2F","vendor":"VOLTAMP TRANSFORMERS . LTD.","total_qty":12,"expected_pct":100.0,"actual_pct":0.0,"status":"Delayed","planned_start_date":"28-05-2026","actual_start_date":null,"planned_end_date":"31-05-2026","actual_end_date":null,"forecasted_end_date":"25-06-2026","expected_qty_till_date":12,"actual_qty_till_date":0},{"item_name":"CSS - 4F","vendor":"VOLTAMP TRANSFORMERS . LTD.","total_qty":6,"expected_pct":100.0,"actual_pct":0.0,"status":"Delayed","planned_start_date":"12-06-2026","actual_start_date":null,"planned_end_date":"15-06-2026","actual_end_date":null,"forecasted_end_date":"25-06-2026","expected_qty_till_date":6,"actual_qty_till_date":0},{"item_name":"CSS - 6F","vendor":"VOLTAMP TRANSFORMERS . LTD.","total_qty":6,"expected_pct":95.9,"actual_pct":0.0,"status":"High Risk","planned_start_date":"10-02-2026","actual_start_date":null,"planned_end_date":"03-07-2026","actual_end_date":null,"forecasted_end_date":"18-11-2026","expected_qty_till_date":0,"actual_qty_till_date":0}],"vendors":[{"vendor_name":"VOLTAMP TRANSFORMERS . LTD.","total_pos":2,"total_items":5,"total_qty":38,"expected_pct":91.92,"actual_pct":34.36,"status":"High Risk","planned_start_date":"10-02-2026","actual_start_date":"10-02-2026","planned_end_date":"28-07-2026","actual_end_date":null,"forecasted_end_date":"01-12-2026","expected_qty_till_date":18,"actual_qty_till_date":0,"items":[{"po_number":"4500003967","po_desc":"Compact Substation - Phase 2 (Upper Floors)","item_name":"CSS - 10F","total_qty":8,"expected_pct":88.49,"actual_pct":95.91,"status":"On Track","planned_start_date":"10-02-2026","actual_start_date":"10-02-2026","planned_end_date":"28-07-2026","actual_end_date":null,"forecasted_end_date":"04-07-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":null,"ongoing_milestone":null},{"po_number":"4500003966","po_desc":"Compact Substation - Phase 1 (Lower Floors)","item_name":"CSS - 4F","total_qty":6,"expected_pct":100.0,"actual_pct":0.0,"status":"Delayed","planned_start_date":"12-06-2026","actual_start_date":null,"planned_end_date":"15-06-2026","actual_end_date":null,"forecasted_end_date":"23-06-2026","expected_qty_till_date":6,"actual_qty_till_date":0,"most_delayed_milestone":"Dispatch Clearance, LDPE Packing & dispatch","ongoing_milestone":null},{"po_number":"4500003966","po_desc":"Compact Substation - Phase 1 (Lower Floors)","item_name":"CSS - 6F","total_qty":6,"expected_pct":94.85,"actual_pct":0.0,"status":"High Risk","planned_start_date":"10-02-2026","actual_start_date":null,"planned_end_date":"03-07-2026","actual_end_date":null,"forecasted_end_date":"17-11-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Receipt of PO by Voltamp from CtrlS","ongoing_milestone":null},{"po_number":"4500003966","po_desc":"Compact Substation - Phase 1 (Lower Floors)","item_name":"CSS - GF+2F","total_qty":12,"expected_pct":100.0,"actual_pct":0.0,"status":"Delayed","planned_start_date":"28-05-2026","actual_start_date":null,"planned_end_date":"31-05-2026","actual_end_date":null,"forecasted_end_date":"23-06-2026","expected_qty_till_date":12,"actual_qty_till_date":0,"most_delayed_milestone":"Dispatch Clearance, LDPE Packing & dispatch","ongoing_milestone":null},{"po_number":"4500003967","po_desc":"Compact Substation - Phase 2 (Upper Floors)","item_name":"CSS - TF","total_qty":6,"expected_pct":92.64,"actual_pct":0.0,"status":"High Risk","planned_start_date":"10-02-2026","actual_start_date":null,"planned_end_date":"12-07-2026","actual_end_date":null,"forecasted_end_date":"01-12-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Receipt of PO by Voltamp from CtrlS","ongoing_milestone":null}]}]},{"package":"DG Set","total_pos":2,"total_vendors":2,"total_items":17,"total_qty":64,"expected_pct":81.44,"actual_pct":5.82,"status":"High Risk","planned_start_date":"03-03-2026","actual_start_date":"06-03-2026","planned_end_date":"30-09-2026","actual_end_date":null,"forecasted_end_date":"25-02-2027","expected_qty_till_date":6,"actual_qty_till_date":0,"top_critical_items":[{"item_name":"DGSet - 1F+2F","vendor":"SUDHIR POWER LIMITED","total_qty":6,"expected_pct":100.0,"actual_pct":73.56,"status":"Delayed","planned_start_date":"03-03-2026","actual_start_date":"12-03-2026","planned_end_date":"12-06-2026","actual_end_date":null,"forecasted_end_date":"10-07-2026","expected_qty_till_date":6,"actual_qty_till_date":0},{"item_name":"DG Set- 2F+3F+TF","vendor":"Jakson Limited","total_qty":8,"expected_pct":100.0,"actual_pct":67.16,"status":"Delayed","planned_start_date":"06-03-2026","actual_start_date":"06-03-2026","planned_end_date":"20-06-2026","actual_end_date":null,"forecasted_end_date":"10-07-2026","expected_qty_till_date":8,"actual_qty_till_date":0},{"item_name":"DG Set - 3F+TF","vendor":"SUDHIR POWER LIMITED","total_qty":6,"expected_pct":97.46,"actual_pct":0.0,"status":"High Risk","planned_start_date":"03-03-2026","actual_start_date":null,"planned_end_date":"25-06-2026","actual_end_date":null,"forecasted_end_date":"15-10-2026","expected_qty_till_date":0,"actual_qty_till_date":0}],"vendors":[{"vendor_name":"SUDHIR POWER LIMITED","total_pos":1,"total_items":9,"total_qty":35,"expected_pct":83.27,"actual_pct":5.54,"status":"High Risk","planned_start_date":"03-03-2026","actual_start_date":"12-03-2026","planned_end_date":"30-09-2026","actual_end_date":null,"forecasted_end_date":"25-02-2027","expected_qty_till_date":6,"actual_qty_till_date":0,"items":[{"po_number":"4500004192","po_desc":"2500KVA DG set- Sudhir","item_name":"DGSet - 1F+2F","total_qty":6,"expected_pct":100.0,"actual_pct":73.56,"status":"Delayed","planned_start_date":"03-03-2026","actual_start_date":"12-03-2026","planned_end_date":"12-06-2026","actual_end_date":null,"forecasted_end_date":"08-07-2026","expected_qty_till_date":6,"actual_qty_till_date":0,"most_delayed_milestone":"Readiness of day tanks at Sudhir works for mechanical sub-assembly","ongoing_milestone":"Readiness of day tanks, Mechanical sub-assembly"},{"po_number":"4500004192","po_desc":"2500KVA DG set- Sudhir","item_name":"DG Set - 3F+TF","total_qty":6,"expected_pct":96.45,"actual_pct":0.0,"status":"High Risk","planned_start_date":"03-03-2026","actual_start_date":null,"planned_end_date":"25-06-2026","actual_end_date":null,"forecasted_end_date":"14-10-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"GA drawing & technical datasheet submission","ongoing_milestone":null},{"po_number":"4500004192","po_desc":"2500KVA DG set- Sudhir","item_name":"DG Set - 4F","total_qty":3,"expected_pct":91.32,"actual_pct":0.0,"status":"High Risk","planned_start_date":"03-03-2026","actual_start_date":null,"planned_end_date":"07-07-2026","actual_end_date":null,"forecasted_end_date":"31-10-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"GA drawing & technical datasheet submission","ongoing_milestone":null},{"po_number":"4500004192","po_desc":"2500KVA DG set- Sudhir","item_name":"DG Set - 5F","total_qty":3,"expected_pct":86.89,"actual_pct":0.0,"status":"High Risk","planned_start_date":"03-03-2026","actual_start_date":null,"planned_end_date":"18-07-2026","actual_end_date":null,"forecasted_end_date":"15-11-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"GA drawing & technical datasheet submission","ongoing_milestone":null},{"po_number":"4500004192","po_desc":"2500KVA DG set- Sudhir","item_name":"DG Set - 6F","total_qty":3,"expected_pct":83.5,"actual_pct":0.0,"status":"High Risk","planned_start_date":"03-03-2026","actual_start_date":null,"planned_end_date":"28-07-2026","actual_end_date":null,"forecasted_end_date":"29-11-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"GA drawing & technical datasheet submission","ongoing_milestone":null},{"po_number":"4500004192","po_desc":"2500KVA DG set- Sudhir","item_name":"DG Set - 7F","total_qty":3,"expected_pct":82.14,"actual_pct":0.0,"status":"High Risk","planned_start_date":"03-03-2026","actual_start_date":null,"planned_end_date":"05-08-2026","actual_end_date":null,"forecasted_end_date":"11-12-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"GA drawing & technical datasheet submission","ongoing_milestone":null},{"po_number":"4500004192","po_desc":"2500KVA DG set- Sudhir","item_name":"DG Set - 8F","total_qty":5,"expected_pct":80.05,"actual_pct":0.0,"status":"High Risk","planned_start_date":"03-03-2026","actual_start_date":null,"planned_end_date":"17-08-2026","actual_end_date":null,"forecasted_end_date":"29-12-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"GA drawing & technical datasheet submission","ongoing_milestone":null},{"po_number":"4500004192","po_desc":"2500KVA DG set- Sudhir","item_name":"DG Set - 9F","total_qty":3,"expected_pct":76.64,"actual_pct":0.0,"status":"High Risk","planned_start_date":"03-03-2026","actual_start_date":null,"planned_end_date":"03-09-2026","actual_end_date":null,"forecasted_end_date":"23-01-2027","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"GA drawing & technical datasheet submission","ongoing_milestone":null},{"po_number":"4500004192","po_desc":"2500KVA DG set- Sudhir","item_name":"DG Set - 10F","total_qty":3,"expected_pct":69.98,"actual_pct":0.0,"status":"High Risk","planned_start_date":"03-03-2026","actual_start_date":null,"planned_end_date":"30-09-2026","actual_end_date":null,"forecasted_end_date":"25-02-2027","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"GA drawing & technical datasheet submission","ongoing_milestone":null}]},{"vendor_name":"Jakson Limited","total_pos":1,"total_items":8,"total_qty":29,"expected_pct":79.26,"actual_pct":6.15,"status":"High Risk","planned_start_date":"06-03-2026","actual_start_date":"06-03-2026","planned_end_date":"30-08-2026","actual_end_date":null,"forecasted_end_date":"30-12-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"items":[{"po_number":"4500004259","po_desc":"2500KVA DG set","item_name":"DG Set- 2F+3F+TF","total_qty":8,"expected_pct":98.81,"actual_pct":67.16,"status":"High Risk","planned_start_date":"06-03-2026","actual_start_date":"06-03-2026","planned_end_date":"20-06-2026","actual_end_date":null,"forecasted_end_date":"30-06-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Isolator panel + AMF panel receipt at Jakson works","ongoing_milestone":"Engine + alternator receipt, Isolator panel receipt"},{"po_number":"4500004259","po_desc":"2500KVA DG set","item_name":"DG Set- 4F+STF","total_qty":5,"expected_pct":91.22,"actual_pct":0.0,"status":"High Risk","planned_start_date":"06-03-2026","actual_start_date":null,"planned_end_date":"05-07-2026","actual_end_date":null,"forecasted_end_date":"24-10-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Receipt of PO by Jakson Ltd from Ctrls","ongoing_milestone":null},{"po_number":"4500004259","po_desc":"2500KVA DG set","item_name":"DG Set- 5F","total_qty":3,"expected_pct":87.48,"actual_pct":0.0,"status":"High Risk","planned_start_date":"06-03-2026","actual_start_date":null,"planned_end_date":"15-07-2026","actual_end_date":null,"forecasted_end_date":"07-11-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Receipt of PO by Jakson Ltd from Ctrls","ongoing_milestone":null},{"po_number":"4500004259","po_desc":"2500KVA DG set","item_name":"DG Set- 6F","total_qty":3,"expected_pct":82.26,"actual_pct":0.0,"status":"High Risk","planned_start_date":"06-03-2026","actual_start_date":null,"planned_end_date":"25-07-2026","actual_end_date":null,"forecasted_end_date":"19-11-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Receipt of PO by Jakson Ltd from Ctrls","ongoing_milestone":null},{"po_number":"4500004259","po_desc":"2500KVA DG set","item_name":"DG Set- 7F","total_qty":3,"expected_pct":77.14,"actual_pct":0.0,"status":"High Risk","planned_start_date":"06-03-2026","actual_start_date":null,"planned_end_date":"02-08-2026","actual_end_date":null,"forecasted_end_date":"26-11-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Receipt of PO by Jakson Ltd from Ctrls","ongoing_milestone":null},{"po_number":"4500004259","po_desc":"2500KVA DG set","item_name":"DG Set- 8F","total_qty":1,"expected_pct":72.2,"actual_pct":0.0,"status":"High Risk","planned_start_date":"06-03-2026","actual_start_date":null,"planned_end_date":"14-08-2026","actual_end_date":null,"forecasted_end_date":"09-12-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Receipt of PO by Jakson Ltd from Ctrls","ongoing_milestone":null},{"po_number":"4500004259","po_desc":"2500KVA DG set","item_name":"DG Set- 9F","total_qty":3,"expected_pct":69.57,"actual_pct":0.0,"status":"High Risk","planned_start_date":"06-03-2026","actual_start_date":null,"planned_end_date":"25-08-2026","actual_end_date":null,"forecasted_end_date":"23-12-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Receipt of PO by Jakson Ltd from Ctrls","ongoing_milestone":null},{"po_number":"4500004259","po_desc":"2500KVA DG set","item_name":"DG Set- 10F","total_qty":3,"expected_pct":68.52,"actual_pct":0.0,"status":"High Risk","planned_start_date":"06-03-2026","actual_start_date":null,"planned_end_date":"30-08-2026","actual_end_date":null,"forecasted_end_date":"30-12-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Receipt of PO by Jakson Ltd from Ctrls","ongoing_milestone":null}]}]},{"package":"FWU","total_pos":1,"total_vendors":1,"total_items":10,"total_qty":102,"expected_pct":75.91,"actual_pct":15.03,"status":"High Risk","planned_start_date":"12-02-2026","actual_start_date":"12-02-2026","planned_end_date":"14-08-2026","actual_end_date":null,"forecasted_end_date":"01-12-2026","expected_qty_till_date":20,"actual_qty_till_date":0,"top_critical_items":[{"item_name":"Fan wall units - 1F","vendor":"Swegon Blue Box Private Limited","total_qty":10,"expected_pct":100.0,"actual_pct":94.38,"status":"Delayed","planned_start_date":"12-02-2026","actual_start_date":"12-02-2026","planned_end_date":"09-06-2026","actual_end_date":null,"forecasted_end_date":"22-06-2026","expected_qty_till_date":10,"actual_qty_till_date":5},{"item_name":"Fan wall units - 2F","vendor":"Swegon Blue Box Private Limited","total_qty":10,"expected_pct":100.0,"actual_pct":93.46,"status":"Delayed","planned_start_date":"12-02-2026","actual_start_date":"14-05-2026","planned_end_date":"17-06-2026","actual_end_date":null,"forecasted_end_date":"22-06-2026","expected_qty_till_date":10,"actual_qty_till_date":0},{"item_name":"Fan wall units - GF","vendor":"Swegon Blue Box Private Limited","total_qty":12,"expected_pct":98.11,"actual_pct":0.0,"status":"High Risk","planned_start_date":"12-02-2026","actual_start_date":null,"planned_end_date":"23-06-2026","actual_end_date":null,"forecasted_end_date":"31-10-2026","expected_qty_till_date":0,"actual_qty_till_date":0}],"vendors":[{"vendor_name":"Swegon Blue Box Private Limited","total_pos":1,"total_items":10,"total_qty":102,"expected_pct":75.91,"actual_pct":15.03,"status":"High Risk","planned_start_date":"12-02-2026","actual_start_date":"12-02-2026","planned_end_date":"14-08-2026","actual_end_date":null,"forecasted_end_date":"01-12-2026","expected_qty_till_date":20,"actual_qty_till_date":0,"items":[{"po_number":"4500004015","po_desc":"Fan wall units","item_name":"Fan wall units - 1F","total_qty":10,"expected_pct":100.0,"actual_pct":94.38,"status":"Delayed","planned_start_date":"12-02-2026","actual_start_date":"12-02-2026","planned_end_date":"09-06-2026","actual_end_date":null,"forecasted_end_date":"20-06-2026","expected_qty_till_date":10,"actual_qty_till_date":5,"most_delayed_milestone":"Base frame, enclosure, internal partitions - Order Placement","ongoing_milestone":"Base frame Order Placement, Receipt at Works, Final Assembly"},{"po_number":"4500004015","po_desc":"Fan wall units","item_name":"Fan wall units - 2F","total_qty":10,"expected_pct":100.0,"actual_pct":93.46,"status":"Delayed","planned_start_date":"12-02-2026","actual_start_date":"14-05-2026","planned_end_date":"17-06-2026","actual_end_date":null,"forecasted_end_date":"20-06-2026","expected_qty_till_date":10,"actual_qty_till_date":0,"most_delayed_milestone":"Base frame, enclosure - Order Placement","ongoing_milestone":"Dispatch Clearance, Packing & Dispatch from Swegon Works"},{"po_number":"4500004015","po_desc":"Fan wall units","item_name":"Fan wall units - 3F","total_qty":10,"expected_pct":91.82,"actual_pct":0.0,"status":"High Risk","planned_start_date":"12-02-2026","actual_start_date":null,"planned_end_date":"30-06-2026","actual_end_date":null,"forecasted_end_date":"05-11-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Receipt of PO by Swegon from CtrlS","ongoing_milestone":null},{"po_number":"4500004015","po_desc":"Fan wall units","item_name":"Fan wall units - 4F","total_qty":10,"expected_pct":89.94,"actual_pct":0.0,"status":"High Risk","planned_start_date":"12-02-2026","actual_start_date":null,"planned_end_date":"09-07-2026","actual_end_date":null,"forecasted_end_date":"19-11-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Receipt of PO by Swegon from CtrlS","ongoing_milestone":null},{"po_number":"4500004015","po_desc":"Fan wall units","item_name":"Fan wall units - 5F","total_qty":10,"expected_pct":89.94,"actual_pct":0.0,"status":"High Risk","planned_start_date":"12-02-2026","actual_start_date":null,"planned_end_date":"15-07-2026","actual_end_date":null,"forecasted_end_date":"01-12-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Receipt of PO by Swegon from CtrlS","ongoing_milestone":null},{"po_number":"4500004015","po_desc":"Fan wall units","item_name":"Fan wall units - 6F","total_qty":10,"expected_pct":54.67,"actual_pct":0.0,"status":"High Risk","planned_start_date":"12-02-2026","actual_start_date":null,"planned_end_date":"27-07-2026","actual_end_date":null,"forecasted_end_date":"26-10-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Receipt of PO by Swegon from CtrlS","ongoing_milestone":null},{"po_number":"4500004015","po_desc":"Fan wall units","item_name":"Fan wall units - 7F","total_qty":10,"expected_pct":54.67,"actual_pct":0.0,"status":"High Risk","planned_start_date":"12-02-2026","actual_start_date":null,"planned_end_date":"05-08-2026","actual_end_date":null,"forecasted_end_date":"09-11-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Receipt of PO by Swegon from CtrlS","ongoing_milestone":null},{"po_number":"4500004015","po_desc":"Fan wall units","item_name":"Fan wall units - 8F","total_qty":10,"expected_pct":54.67,"actual_pct":0.0,"status":"High Risk","planned_start_date":"12-02-2026","actual_start_date":null,"planned_end_date":"10-08-2026","actual_end_date":null,"forecasted_end_date":"16-11-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Receipt of PO by Swegon from CtrlS","ongoing_milestone":null},{"po_number":"4500004015","po_desc":"Fan wall units","item_name":"Fan wall units - 9F","total_qty":10,"expected_pct":54.67,"actual_pct":0.0,"status":"High Risk","planned_start_date":"12-02-2026","actual_start_date":null,"planned_end_date":"14-08-2026","actual_end_date":null,"forecasted_end_date":"23-11-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Receipt of PO by Swegon from CtrlS","ongoing_milestone":null},{"po_number":"4500004015","po_desc":"Fan wall units","item_name":"Fan wall units - GF","total_qty":12,"expected_pct":96.23,"actual_pct":0.0,"status":"High Risk","planned_start_date":"12-02-2026","actual_start_date":null,"planned_end_date":"23-06-2026","actual_end_date":null,"forecasted_end_date":"28-10-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Receipt of PO by Swegon from CtrlS","ongoing_milestone":null}]}]},{"package":"LT PANELS","total_pos":1,"total_vendors":1,"total_items":1,"total_qty":20,"expected_pct":88.89,"actual_pct":32.64,"status":"Low Risk","planned_start_date":"31-03-2026","actual_start_date":"03-03-2026","planned_end_date":"07-07-2026","actual_end_date":null,"forecasted_end_date":"15-07-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"top_critical_items":[{"item_name":"LT Panel-6F","vendor":"VIVID ELECTROMECH LIMITED","total_qty":20,"expected_pct":90.28,"actual_pct":32.64,"status":"High Risk","planned_start_date":"31-03-2026","actual_start_date":"03-03-2026","planned_end_date":"07-07-2026","actual_end_date":null,"forecasted_end_date":"15-07-2026","expected_qty_till_date":0,"actual_qty_till_date":0}],"vendors":[{"vendor_name":"VIVID ELECTROMECH LIMITED","total_pos":1,"total_items":1,"total_qty":20,"expected_pct":88.89,"actual_pct":32.64,"status":"Low Risk","planned_start_date":"31-03-2026","actual_start_date":"03-03-2026","planned_end_date":"07-07-2026","actual_end_date":null,"forecasted_end_date":"15-07-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"items":[{"po_number":"4500004615","po_desc":"LT Panels","item_name":"LT Panel-6F","total_qty":20,"expected_pct":88.89,"actual_pct":32.64,"status":"Low Risk","planned_start_date":"31-03-2026","actual_start_date":"03-03-2026","planned_end_date":"07-07-2026","actual_end_date":null,"forecasted_end_date":"15-07-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"GAD & Technical Document Submission to CtrlS","ongoing_milestone":"Panel enclosure fabrication, Surface preparation, Final mechanical assembly"}]}]},{"package":"PAHU","total_pos":1,"total_vendors":1,"total_items":12,"total_qty":118,"expected_pct":88.43,"actual_pct":22.73,"status":"High Risk","planned_start_date":"12-02-2026","actual_start_date":"14-05-2026","planned_end_date":"18-07-2026","actual_end_date":null,"forecasted_end_date":"11-11-2026","expected_qty_till_date":46,"actual_qty_till_date":0,"top_critical_items":[{"item_name":"3F-Precision Air handling unit","vendor":"Swegon Blue Box Private Limited","total_qty":8,"expected_pct":100.0,"actual_pct":0.0,"status":"Delayed","planned_start_date":"12-02-2026","actual_start_date":null,"planned_end_date":"14-06-2026","actual_end_date":null,"forecasted_end_date":"22-10-2026","expected_qty_till_date":8,"actual_qty_till_date":0},{"item_name":"4F-Precision Air handling unit","vendor":"Swegon Blue Box Private Limited","total_qty":8,"expected_pct":100.0,"actual_pct":0.0,"status":"Delayed","planned_start_date":"12-02-2026","actual_start_date":null,"planned_end_date":"05-06-2026","actual_end_date":null,"forecasted_end_date":"13-10-2026","expected_qty_till_date":8,"actual_qty_till_date":0},{"item_name":"5F-Precision Air handling unit","vendor":"Swegon Blue Box Private Limited","total_qty":8,"expected_pct":100.0,"actual_pct":0.0,"status":"Delayed","planned_start_date":"12-02-2026","actual_start_date":null,"planned_end_date":"15-06-2026","actual_end_date":null,"forecasted_end_date":"23-10-2026","expected_qty_till_date":8,"actual_qty_till_date":0}],"vendors":[{"vendor_name":"Swegon Blue Box Private Limited","total_pos":1,"total_items":12,"total_qty":118,"expected_pct":88.43,"actual_pct":22.73,"status":"High Risk","planned_start_date":"12-02-2026","actual_start_date":"14-05-2026","planned_end_date":"18-07-2026","actual_end_date":null,"forecasted_end_date":"11-11-2026","expected_qty_till_date":46,"actual_qty_till_date":0,"items":[{"po_number":"4500004018","po_desc":"Precision Air handling unit","item_name":"GF -Precision Air handling unit","total_qty":14,"expected_pct":100.0,"actual_pct":96.81,"status":"Delayed","planned_start_date":"12-02-2026","actual_start_date":"15-05-2026","planned_end_date":"13-06-2026","actual_end_date":null,"forecasted_end_date":"26-06-2026","expected_qty_till_date":14,"actual_qty_till_date":0,"most_delayed_milestone":"Casing + Base Frame + other mechanical Assembly","ongoing_milestone":"Casing + Base Frame Assembly, Electrical Panel Assembly, Wiring & Cable Termination, Final Assembly"},{"po_number":"4500004018","po_desc":"Precision Air handling unit","item_name":"1F-Precision Air handling unit","total_qty":8,"expected_pct":98.13,"actual_pct":98.44,"status":"On Track","planned_start_date":"12-02-2026","actual_start_date":"14-05-2026","planned_end_date":"21-06-2026","actual_end_date":null,"forecasted_end_date":"23-06-2026","expected_qty_till_date":0,"actual_qty_till_date":5,"most_delayed_milestone":"Pre-FAT Performance Test (Internal)","ongoing_milestone":"Dispatch Clearance, Packing & Dispatch, Transit & Receipt at CtrlS DC8 Site"},{"po_number":"4500004018","po_desc":"Precision Air handling unit","item_name":"2F-Precision Air handling unit","total_qty":8,"expected_pct":100.0,"actual_pct":97.99,"status":"Delayed","planned_start_date":"12-02-2026","actual_start_date":"14-05-2026","planned_end_date":"10-06-2026","actual_end_date":null,"forecasted_end_date":"20-06-2026","expected_qty_till_date":8,"actual_qty_till_date":1,"most_delayed_milestone":"Final Unit Assembly, Insulation & Closeout","ongoing_milestone":"Final Unit Assembly, FWT / Fitness Test, Dispatch Clearance"},{"po_number":"4500004018","po_desc":"Precision Air handling unit","item_name":"3F-Precision Air handling unit","total_qty":8,"expected_pct":100.0,"actual_pct":0.0,"status":"Delayed","planned_start_date":"12-02-2026","actual_start_date":null,"planned_end_date":"14-06-2026","actual_end_date":null,"forecasted_end_date":"20-10-2026","expected_qty_till_date":8,"actual_qty_till_date":0,"most_delayed_milestone":"Receipt of PO by Swegon from CtrlS","ongoing_milestone":null},{"po_number":"4500004018","po_desc":"Precision Air handling unit","item_name":"4F-Precision Air handling unit","total_qty":8,"expected_pct":100.0,"actual_pct":0.0,"status":"Delayed","planned_start_date":"12-02-2026","actual_start_date":null,"planned_end_date":"05-06-2026","actual_end_date":null,"forecasted_end_date":"11-10-2026","expected_qty_till_date":8,"actual_qty_till_date":0,"most_delayed_milestone":"Receipt of PO by Swegon from CtrlS","ongoing_milestone":null},{"po_number":"4500004018","po_desc":"Precision Air handling unit","item_name":"5F-Precision Air handling unit","total_qty":8,"expected_pct":100.0,"actual_pct":0.0,"status":"Delayed","planned_start_date":"12-02-2026","actual_start_date":null,"planned_end_date":"15-06-2026","actual_end_date":null,"forecasted_end_date":"21-10-2026","expected_qty_till_date":8,"actual_qty_till_date":0,"most_delayed_milestone":"Receipt of PO by Swegon from CtrlS","ongoing_milestone":null},{"po_number":"4500004018","po_desc":"Precision Air handling unit","item_name":"6F-Precision Air handling unit","total_qty":8,"expected_pct":98.74,"actual_pct":0.0,"status":"High Risk","planned_start_date":"12-02-2026","actual_start_date":null,"planned_end_date":"20-06-2026","actual_end_date":null,"forecasted_end_date":"25-10-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Receipt of PO by Swegon from CtrlS","ongoing_milestone":null},{"po_number":"4500004018","po_desc":"Precision Air handling unit","item_name":"7F-Precision Air handling unit","total_qty":8,"expected_pct":94.95,"actual_pct":0.0,"status":"High Risk","planned_start_date":"12-02-2026","actual_start_date":null,"planned_end_date":"25-06-2026","actual_end_date":null,"forecasted_end_date":"30-10-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Receipt of PO by Swegon from CtrlS","ongoing_milestone":null},{"po_number":"4500004018","po_desc":"Precision Air handling unit","item_name":"8F-Precision Air handling unit","total_qty":8,"expected_pct":73.69,"actual_pct":0.0,"status":"High Risk","planned_start_date":"12-02-2026","actual_start_date":null,"planned_end_date":"04-07-2026","actual_end_date":null,"forecasted_end_date":"17-10-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Receipt of PO by Swegon from CtrlS","ongoing_milestone":null},{"po_number":"4500004018","po_desc":"Precision Air handling unit","item_name":"9F-Precision Air handling unit","total_qty":8,"expected_pct":64.18,"actual_pct":0.0,"status":"High Risk","planned_start_date":"12-02-2026","actual_start_date":null,"planned_end_date":"11-07-2026","actual_end_date":null,"forecasted_end_date":"15-10-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Receipt of PO by Swegon from CtrlS","ongoing_milestone":null},{"po_number":"4500004018","po_desc":"Precision Air handling unit","item_name":"9F+TF-Precision Air handling unit","total_qty":20,"expected_pct":72.78,"actual_pct":0.0,"status":"High Risk","planned_start_date":"12-02-2026","actual_start_date":null,"planned_end_date":"11-07-2026","actual_end_date":null,"forecasted_end_date":"28-10-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Receipt of PO by Swegon from CtrlS","ongoing_milestone":null},{"po_number":"4500004018","po_desc":"Precision Air handling unit","item_name":"10F-Precision Air handling unit","total_qty":12,"expected_pct":73.69,"actual_pct":0.0,"status":"High Risk","planned_start_date":"12-02-2026","actual_start_date":null,"planned_end_date":"18-07-2026","actual_end_date":null,"forecasted_end_date":"11-11-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Receipt of PO by Swegon from CtrlS","ongoing_milestone":null}]}]},{"package":"PDU","total_pos":3,"total_vendors":3,"total_items":6,"total_qty":166,"expected_pct":74.32,"actual_pct":13.74,"status":"High Risk","planned_start_date":"27-03-2026","actual_start_date":"27-03-2026","planned_end_date":"23-08-2026","actual_end_date":null,"forecasted_end_date":"17-11-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"top_critical_items":[{"item_name":"Pragathi PDU - 1F","vendor":"PRAGATHI CONTROLS","total_qty":30,"expected_pct":97.52,"actual_pct":0.5,"status":"High Risk","planned_start_date":"27-03-2026","actual_start_date":"27-03-2026","planned_end_date":"25-06-2026","actual_end_date":null,"forecasted_end_date":"21-09-2026","expected_qty_till_date":0,"actual_qty_till_date":0},{"item_name":"Pragathi PDU - 4F","vendor":"PRAGATHI CONTROLS","total_qty":30,"expected_pct":74.85,"actual_pct":0.5,"status":"High Risk","planned_start_date":"27-03-2026","actual_start_date":"27-03-2026","planned_end_date":"25-07-2026","actual_end_date":null,"forecasted_end_date":"21-10-2026","expected_qty_till_date":0,"actual_qty_till_date":0},{"item_name":"PDU - 2F","vendor":"RISHAB INDUSTRIES","total_qty":30,"expected_pct":87.85,"actual_pct":18.14,"status":"High Risk","planned_start_date":"30-03-2026","actual_start_date":"30-03-2026","planned_end_date":"17-07-2026","actual_end_date":null,"forecasted_end_date":"28-08-2026","expected_qty_till_date":0,"actual_qty_till_date":0}],"vendors":[{"vendor_name":"PRAGATHI CONTROLS","total_pos":1,"total_items":3,"total_qty":90,"expected_pct":68.65,"actual_pct":0.5,"status":"High Risk","planned_start_date":"27-03-2026","actual_start_date":"27-03-2026","planned_end_date":"23-08-2026","actual_end_date":null,"forecasted_end_date":"17-11-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"items":[{"po_number":"4500004543","po_desc":"Power Distribution Unit","item_name":"Pragathi PDU - 1F","total_qty":30,"expected_pct":97.52,"actual_pct":0.5,"status":"High Risk","planned_start_date":"27-03-2026","actual_start_date":"27-03-2026","planned_end_date":"25-06-2026","actual_end_date":null,"forecasted_end_date":"19-09-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"GAD, Wiring Diagrams & Technical Document Submission to CtrlS","ongoing_milestone":null},{"po_number":"4500004543","po_desc":"Power Distribution Unit","item_name":"Pragathi PDU - 4F","total_qty":30,"expected_pct":72.62,"actual_pct":0.5,"status":"High Risk","planned_start_date":"27-03-2026","actual_start_date":"27-03-2026","planned_end_date":"25-07-2026","actual_end_date":null,"forecasted_end_date":"19-10-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"GAD, Wiring Diagrams & Technical Document Submission to CtrlS","ongoing_milestone":null},{"po_number":"4500004543","po_desc":"Power Distribution Unit","item_name":"Pragathi PDU - 7F","total_qty":30,"expected_pct":48.02,"actual_pct":0.5,"status":"High Risk","planned_start_date":"27-03-2026","actual_start_date":"27-03-2026","planned_end_date":"23-08-2026","actual_end_date":null,"forecasted_end_date":"17-11-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"GAD, Wiring Diagrams & Technical Document Submission to CtrlS","ongoing_milestone":null}]},{"vendor_name":"RISHAB INDUSTRIES","total_pos":1,"total_items":2,"total_qty":46,"expected_pct":88.87,"actual_pct":23.35,"status":"High Risk","planned_start_date":"30-03-2026","actual_start_date":"30-03-2026","planned_end_date":"17-07-2026","actual_end_date":null,"forecasted_end_date":"26-08-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"items":[{"po_number":"4500004575","po_desc":"Rishab - Power Distribution Unit","item_name":"PDU - 2F","total_qty":30,"expected_pct":85.17,"actual_pct":18.14,"status":"High Risk","planned_start_date":"30-03-2026","actual_start_date":"30-03-2026","planned_end_date":"17-07-2026","actual_end_date":null,"forecasted_end_date":"26-08-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Copper Busbar Fabrication, Drilling & Plating","ongoing_milestone":null},{"po_number":"4500004575","po_desc":"Rishab - Power Distribution Unit","item_name":"PDU - DWDM+GF","total_qty":16,"expected_pct":93.26,"actual_pct":29.53,"status":"High Risk","planned_start_date":"30-03-2026","actual_start_date":"30-03-2026","planned_end_date":"30-06-2026","actual_end_date":null,"forecasted_end_date":"03-08-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Copper Busbar Fabrication, Drilling & Plating","ongoing_milestone":"Copper Busbar Fabrication, Mechanical assembly, Electrical assembly and wiring, FAT"}]},{"vendor_name":"Datson","total_pos":1,"total_items":1,"total_qty":30,"expected_pct":68.23,"actual_pct":21.31,"status":"Medium Risk","planned_start_date":"30-03-2026","actual_start_date":"30-03-2026","planned_end_date":"30-07-2026","actual_end_date":null,"forecasted_end_date":"29-08-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"items":[{"po_number":"499xxxxxxx","po_desc":"Power Distribution Unit","item_name":"Datson- PDU - 3F","total_qty":30,"expected_pct":68.23,"actual_pct":21.31,"status":"High Risk","planned_start_date":"30-03-2026","actual_start_date":"30-03-2026","planned_end_date":"30-07-2026","actual_end_date":null,"forecasted_end_date":"29-08-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Copper Busbar, Plating - Outsourced","ongoing_milestone":"Receipt of Balance BOQ Components, Copper Busbar Plating, Receipt of MCCBs, Main Busbar Assembly"}]}]},{"package":"PUMPS","total_pos":1,"total_vendors":1,"total_items":2,"total_qty":38,"expected_pct":92.29,"actual_pct":19.9,"status":"High Risk","planned_start_date":"02-03-2026","actual_start_date":"04-03-2026","planned_end_date":"07-07-2026","actual_end_date":null,"forecasted_end_date":"22-10-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"top_critical_items":[{"item_name":"AC pumps-TF","vendor":"Xylem Water Solutions India Pvt. Ltd.","total_qty":16,"expected_pct":93.42,"actual_pct":3.07,"status":"High Risk","planned_start_date":"02-03-2026","actual_start_date":"04-03-2026","planned_end_date":"07-07-2026","actual_end_date":null,"forecasted_end_date":"24-10-2026","expected_qty_till_date":0,"actual_qty_till_date":0},{"item_name":"LC Pumps-TF","vendor":"Xylem Water Solutions India Pvt. Ltd.","total_qty":22,"expected_pct":94.63,"actual_pct":37.28,"status":"High Risk","planned_start_date":"02-03-2026","actual_start_date":"04-03-2026","planned_end_date":"03-07-2026","actual_end_date":null,"forecasted_end_date":"30-07-2026","expected_qty_till_date":0,"actual_qty_till_date":0}],"vendors":[{"vendor_name":"Xylem Water Solutions India Pvt. Ltd.","total_pos":1,"total_items":2,"total_qty":38,"expected_pct":92.29,"actual_pct":19.9,"status":"High Risk","planned_start_date":"02-03-2026","actual_start_date":"04-03-2026","planned_end_date":"07-07-2026","actual_end_date":null,"forecasted_end_date":"22-10-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"items":[{"po_number":"4500004149","po_desc":"Chilled Water Pump","item_name":"AC pumps-TF","total_qty":16,"expected_pct":91.87,"actual_pct":3.07,"status":"High Risk","planned_start_date":"02-03-2026","actual_start_date":"04-03-2026","planned_end_date":"07-07-2026","actual_end_date":null,"forecasted_end_date":"22-10-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":"Supply lead time and Material Receipt : Electric Motor","ongoing_milestone":null},{"po_number":"4500004149","po_desc":"Chilled Water Pump","item_name":"LC Pumps-TF","total_qty":22,"expected_pct":92.73,"actual_pct":37.28,"status":"High Risk","planned_start_date":"02-03-2026","actual_start_date":"04-03-2026","planned_end_date":"03-07-2026","actual_end_date":null,"forecasted_end_date":"30-07-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":null,"ongoing_milestone":"Supply lead time: Volute Casing, Impeller & Shaft, Hardware & Seals, Electric Motor"}]}]}]}},
+  "CtrlS Hyd": {"last_updated":"2026-06-21T06:00:00Z","error":null,"data":{"project":"CtrlS Hyd","packages":[{"package":"UPS Systems","total_pos":2,"total_vendors":2,"total_items":8,"total_qty":48,"expected_pct":62.0,"actual_pct":58.5,"status":"Low Risk","planned_start_date":"15-01-2026","actual_start_date":"16-01-2026","planned_end_date":"30-06-2026","actual_end_date":null,"forecasted_end_date":"10-07-2026","expected_qty_till_date":24,"actual_qty_till_date":22,"top_critical_items":[{"item_name":"UPS - B1","vendor":"Vertiv India Pvt. Ltd.","total_qty":6,"expected_pct":90.0,"actual_pct":72.0,"status":"Delayed","planned_start_date":"15-01-2026","actual_start_date":"15-01-2026","planned_end_date":"10-05-2026","actual_end_date":null,"forecasted_end_date":"28-05-2026","expected_qty_till_date":6,"actual_qty_till_date":4},{"item_name":"UPS - B2","vendor":"Vertiv India Pvt. Ltd.","total_qty":6,"expected_pct":80.0,"actual_pct":61.0,"status":"Medium Risk","planned_start_date":"20-01-2026","actual_start_date":"22-01-2026","planned_end_date":"25-05-2026","actual_end_date":null,"forecasted_end_date":"15-06-2026","expected_qty_till_date":6,"actual_qty_till_date":4},{"item_name":"UPS - C1","vendor":"Consul Neowatt Power Solutions","total_qty":8,"expected_pct":55.0,"actual_pct":55.0,"status":"On Track","planned_start_date":"01-02-2026","actual_start_date":"03-02-2026","planned_end_date":"30-06-2026","actual_end_date":null,"forecasted_end_date":"05-07-2026","expected_qty_till_date":4,"actual_qty_till_date":4}],"vendors":[{"vendor_name":"Vertiv India Pvt. Ltd.","total_pos":1,"total_items":4,"total_qty":24,"expected_pct":78.0,"actual_pct":66.5,"status":"Delayed","planned_start_date":"15-01-2026","actual_start_date":"15-01-2026","planned_end_date":"25-05-2026","actual_end_date":null,"forecasted_end_date":"15-06-2026","expected_qty_till_date":12,"actual_qty_till_date":10,"items":[{"po_number":"ADN-UPS-001","po_desc":"Online UPS 500kVA","item_name":"UPS - B1","total_qty":6,"expected_pct":90.0,"actual_pct":72.0,"status":"Delayed","planned_start_date":"15-01-2026","actual_start_date":"15-01-2026","planned_end_date":"10-05-2026","actual_end_date":null,"forecasted_end_date":"28-05-2026","expected_qty_till_date":6,"actual_qty_till_date":4,"most_delayed_milestone":"Battery bank assembly & testing","ongoing_milestone":"Battery bank assembly & testing, Load bank testing"},{"po_number":"ADN-UPS-001","po_desc":"Online UPS 500kVA","item_name":"UPS - B2","total_qty":6,"expected_pct":80.0,"actual_pct":61.0,"status":"Medium Risk","planned_start_date":"20-01-2026","actual_start_date":"22-01-2026","planned_end_date":"25-05-2026","actual_end_date":null,"forecasted_end_date":"15-06-2026","expected_qty_till_date":6,"actual_qty_till_date":4,"most_delayed_milestone":"Bypass switch procurement","ongoing_milestone":"Bypass switch procurement, Cabinet assembly"},{"po_number":"ADN-UPS-001","po_desc":"Online UPS 500kVA","item_name":"UPS - B3","total_qty":6,"expected_pct":60.0,"actual_pct":62.0,"status":"On Track","planned_start_date":"01-02-2026","actual_start_date":"01-02-2026","planned_end_date":"20-06-2026","actual_end_date":null,"forecasted_end_date":"18-06-2026","expected_qty_till_date":3,"actual_qty_till_date":4,"most_delayed_milestone":null,"ongoing_milestone":"Wiring, Final assembly, Pre-FAT"},{"po_number":"ADN-UPS-001","po_desc":"Online UPS 500kVA","item_name":"UPS - B4","total_qty":6,"expected_pct":40.0,"actual_pct":42.0,"status":"On Track","planned_start_date":"15-02-2026","actual_start_date":"15-02-2026","planned_end_date":"30-06-2026","actual_end_date":null,"forecasted_end_date":"30-06-2026","expected_qty_till_date":2,"actual_qty_till_date":2,"most_delayed_milestone":null,"ongoing_milestone":"PCB assembly, Transformer winding"}]},{"vendor_name":"Consul Neowatt Power Solutions","total_pos":1,"total_items":4,"total_qty":24,"expected_pct":48.0,"actual_pct":51.0,"status":"On Track","planned_start_date":"01-02-2026","actual_start_date":"03-02-2026","planned_end_date":"30-06-2026","actual_end_date":null,"forecasted_end_date":"10-07-2026","expected_qty_till_date":12,"actual_qty_till_date":12,"items":[{"po_number":"ADN-UPS-002","po_desc":"Online UPS 250kVA","item_name":"UPS - C1","total_qty":8,"expected_pct":55.0,"actual_pct":55.0,"status":"On Track","planned_start_date":"01-02-2026","actual_start_date":"03-02-2026","planned_end_date":"30-06-2026","actual_end_date":null,"forecasted_end_date":"05-07-2026","expected_qty_till_date":4,"actual_qty_till_date":4,"most_delayed_milestone":null,"ongoing_milestone":"Module assembly, Wiring"},{"po_number":"ADN-UPS-002","po_desc":"Online UPS 250kVA","item_name":"UPS - C2","total_qty":8,"expected_pct":40.0,"actual_pct":48.0,"status":"On Track","planned_start_date":"10-02-2026","actual_start_date":"10-02-2026","planned_end_date":"30-06-2026","actual_end_date":null,"forecasted_end_date":"28-06-2026","expected_qty_till_date":4,"actual_qty_till_date":5,"most_delayed_milestone":null,"ongoing_milestone":"Testing, Packaging"},{"po_number":"ADN-UPS-002","po_desc":"Online UPS 250kVA","item_name":"UPS - C3","total_qty":4,"expected_pct":30.0,"actual_pct":28.0,"status":"Medium Risk","planned_start_date":"20-02-2026","actual_start_date":"22-02-2026","planned_end_date":"15-07-2026","actual_end_date":null,"forecasted_end_date":"25-07-2026","expected_qty_till_date":1,"actual_qty_till_date":1,"most_delayed_milestone":"Component sourcing delay - IGBT modules","ongoing_milestone":"IGBT module sourcing"},{"po_number":"ADN-UPS-002","po_desc":"Online UPS 250kVA","item_name":"UPS - C4","total_qty":4,"expected_pct":20.0,"actual_pct":20.0,"status":"On Track","planned_start_date":"01-03-2026","actual_start_date":"03-03-2026","planned_end_date":"10-08-2026","actual_end_date":null,"forecasted_end_date":"10-08-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":null,"ongoing_milestone":"Raw material procurement"}]}]},{"package":"Cooling Towers","total_pos":1,"total_vendors":1,"total_items":4,"total_qty":16,"expected_pct":45.0,"actual_pct":28.0,"status":"High Risk","planned_start_date":"01-03-2026","actual_start_date":"10-03-2026","planned_end_date":"15-08-2026","actual_end_date":null,"forecasted_end_date":"20-10-2026","expected_qty_till_date":4,"actual_qty_till_date":0,"top_critical_items":[{"item_name":"CT - Block A","vendor":"Paharpur Cooling Towers Ltd.","total_qty":4,"expected_pct":60.0,"actual_pct":28.0,"status":"High Risk","planned_start_date":"01-03-2026","actual_start_date":"10-03-2026","planned_end_date":"30-06-2026","actual_end_date":null,"forecasted_end_date":"30-09-2026","expected_qty_till_date":4,"actual_qty_till_date":0},{"item_name":"CT - Block B","vendor":"Paharpur Cooling Towers Ltd.","total_qty":4,"expected_pct":40.0,"actual_pct":28.0,"status":"High Risk","planned_start_date":"15-03-2026","actual_start_date":"25-03-2026","planned_end_date":"15-07-2026","actual_end_date":null,"forecasted_end_date":"15-10-2026","expected_qty_till_date":2,"actual_qty_till_date":0},{"item_name":"CT - Block C","vendor":"Paharpur Cooling Towers Ltd.","total_qty":4,"expected_pct":30.0,"actual_pct":28.0,"status":"Medium Risk","planned_start_date":"01-04-2026","actual_start_date":"10-04-2026","planned_end_date":"31-07-2026","actual_end_date":null,"forecasted_end_date":"20-09-2026","expected_qty_till_date":1,"actual_qty_till_date":0}],"vendors":[{"vendor_name":"Paharpur Cooling Towers Ltd.","total_pos":1,"total_items":4,"total_qty":16,"expected_pct":45.0,"actual_pct":28.0,"status":"High Risk","planned_start_date":"01-03-2026","actual_start_date":"10-03-2026","planned_end_date":"15-08-2026","actual_end_date":null,"forecasted_end_date":"20-10-2026","expected_qty_till_date":4,"actual_qty_till_date":0,"items":[{"po_number":"ADN-CT-001","po_desc":"Induced Draft Cooling Tower","item_name":"CT - Block A","total_qty":4,"expected_pct":60.0,"actual_pct":28.0,"status":"High Risk","planned_start_date":"01-03-2026","actual_start_date":"10-03-2026","planned_end_date":"30-06-2026","actual_end_date":null,"forecasted_end_date":"30-09-2026","expected_qty_till_date":4,"actual_qty_till_date":0,"most_delayed_milestone":"FRP structure fabrication & testing","ongoing_milestone":"FRP fabrication, Fan motor procurement"},{"po_number":"ADN-CT-001","po_desc":"Induced Draft Cooling Tower","item_name":"CT - Block B","total_qty":4,"expected_pct":40.0,"actual_pct":28.0,"status":"High Risk","planned_start_date":"15-03-2026","actual_start_date":"25-03-2026","planned_end_date":"15-07-2026","actual_end_date":null,"forecasted_end_date":"15-10-2026","expected_qty_till_date":2,"actual_qty_till_date":0,"most_delayed_milestone":"GA drawing approval pending","ongoing_milestone":"GA drawing submission"},{"po_number":"ADN-CT-001","po_desc":"Induced Draft Cooling Tower","item_name":"CT - Block C","total_qty":4,"expected_pct":30.0,"actual_pct":28.0,"status":"Medium Risk","planned_start_date":"01-04-2026","actual_start_date":"10-04-2026","planned_end_date":"31-07-2026","actual_end_date":null,"forecasted_end_date":"20-09-2026","expected_qty_till_date":1,"actual_qty_till_date":0,"most_delayed_milestone":null,"ongoing_milestone":"Heat transfer media procurement"},{"po_number":"ADN-CT-001","po_desc":"Induced Draft Cooling Tower","item_name":"CT - Block D","total_qty":4,"expected_pct":10.0,"actual_pct":28.0,"status":"On Track","planned_start_date":"01-05-2026","actual_start_date":"01-05-2026","planned_end_date":"15-08-2026","actual_end_date":null,"forecasted_end_date":"10-08-2026","expected_qty_till_date":0,"actual_qty_till_date":0,"most_delayed_milestone":null,"ongoing_milestone":"Design & engineering"}]}]},{"package":"Gensets","total_pos":1,"total_vendors":1,"total_items":3,"total_qty":9,"expected_pct":70.0,"actual_pct":70.5,"status":"On Track","planned_start_date":"10-02-2026","actual_start_date":"12-02-2026","planned_end_date":"31-07-2026","actual_end_date":null,"forecasted_end_date":"05-08-2026","expected_qty_till_date":3,"actual_qty_till_date":3,"top_critical_items":[{"item_name":"Genset - Zone 1","vendor":"Cummins India Ltd.","total_qty":3,"expected_pct":85.0,"actual_pct":80.0,"status":"Delayed","planned_start_date":"10-02-2026","actual_start_date":"12-02-2026","planned_end_date":"30-05-2026","actual_end_date":null,"forecasted_end_date":"20-06-2026","expected_qty_till_date":3,"actual_qty_till_date":2},{"item_name":"Genset - Zone 2","vendor":"Cummins India Ltd.","total_qty":3,"expected_pct":65.0,"actual_pct":70.0,"status":"On Track","planned_start_date":"15-02-2026","actual_start_date":"15-02-2026","planned_end_date":"30-06-2026","actual_end_date":null,"forecasted_end_date":"28-06-2026","expected_qty_till_date":2,"actual_qty_till_date":2},{"item_name":"Genset - Zone 3","vendor":"Cummins India Ltd.","total_qty":3,"expected_pct":55.0,"actual_pct":62.0,"status":"On Track","planned_start_date":"01-03-2026","actual_start_date":"01-03-2026","planned_end_date":"31-07-2026","actual_end_date":null,"forecasted_end_date":"25-07-2026","expected_qty_till_date":1,"actual_qty_till_date":1}],"vendors":[{"vendor_name":"Cummins India Ltd.","total_pos":1,"total_items":3,"total_qty":9,"expected_pct":70.0,"actual_pct":70.5,"status":"On Track","planned_start_date":"10-02-2026","actual_start_date":"12-02-2026","planned_end_date":"31-07-2026","actual_end_date":null,"forecasted_end_date":"05-08-2026","expected_qty_till_date":3,"actual_qty_till_date":3,"items":[{"po_number":"ADN-GEN-001","po_desc":"2000kVA DG Set","item_name":"Genset - Zone 1","total_qty":3,"expected_pct":85.0,"actual_pct":80.0,"status":"Delayed","planned_start_date":"10-02-2026","actual_start_date":"12-02-2026","planned_end_date":"30-05-2026","actual_end_date":null,"forecasted_end_date":"20-06-2026","expected_qty_till_date":3,"actual_qty_till_date":2,"most_delayed_milestone":"Acoustic enclosure fabrication","ongoing_milestone":"Acoustic enclosure fabrication, Load test"},{"po_number":"ADN-GEN-001","po_desc":"2000kVA DG Set","item_name":"Genset - Zone 2","total_qty":3,"expected_pct":65.0,"actual_pct":70.0,"status":"On Track","planned_start_date":"15-02-2026","actual_start_date":"15-02-2026","planned_end_date":"30-06-2026","actual_end_date":null,"forecasted_end_date":"28-06-2026","expected_qty_till_date":2,"actual_qty_till_date":2,"most_delayed_milestone":null,"ongoing_milestone":"Engine + alternator assembly, Wiring"},{"po_number":"ADN-GEN-001","po_desc":"2000kVA DG Set","item_name":"Genset - Zone 3","total_qty":3,"expected_pct":55.0,"actual_pct":62.0,"status":"On Track","planned_start_date":"01-03-2026","actual_start_date":"01-03-2026","planned_end_date":"31-07-2026","actual_end_date":null,"forecasted_end_date":"25-07-2026","expected_qty_till_date":1,"actual_qty_till_date":1,"most_delayed_milestone":null,"ongoing_milestone":"Sub-assembly, Testing"}]}]}]}}
+};
+
+// ── HELPERS ─────────────────────────────────────────────────────────────
+const MONTHS = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function fmtDate(d){if(!d)return'—';const[dd,mm,yyyy]=d.split('-');return`${parseInt(dd)} ${MONTHS[parseInt(mm)]} ${yyyy}`}
+function dateDiff(p,f){if(!p||!f)return null;const parse=s=>{const[d,m,y]=s.split('-');return new Date(y,m-1,d)};return Math.round((parse(f)-parse(p))/(864e5))}
+function sk(s){if(!s)return'';return s.toLowerCase().replace(/\s+/g,'-')}
+function pColor(actual,expected){if(actual>=expected)return'green';return(expected-actual)<=15?'amber':'red'}
+
+// ── KPI STRIP ────────────────────────────────────────────────────────────
+function renderKPIs(packages){
+  const totalV=[...new Set(packages.flatMap(p=>p.vendors.map(v=>v.vendor_name)))].length;
+  const totalQ=packages.reduce((s,p)=>s+p.total_qty,0);
+  const totalExpQ=packages.reduce((s,p)=>s+p.expected_qty_till_date,0);
+  const totalActQ=packages.reduce((s,p)=>s+p.actual_qty_till_date,0);
+  const hr=packages.filter(p=>p.status==='High Risk').length;
+  document.getElementById('kpi-strip').innerHTML=`
+    <div class="kpi-card"><div class="kpi-label">Total Packages</div><div class="kpi-value">${packages.length}</div><div class="kpi-sub">${hr} High Risk &nbsp;·&nbsp; ${packages.length-hr} Others</div></div>
+    <div class="kpi-card"><div class="kpi-label">Total Vendors</div><div class="kpi-value">${totalV}</div><div class="kpi-sub">Across all packages</div></div>
+    <div class="kpi-card"><div class="kpi-label">Total Units</div><div class="kpi-value">${totalQ.toLocaleString()}</div><div class="kpi-sub">Across all packages</div></div>
+    <div class="kpi-card"><div class="kpi-label">Units Delivered Till Date</div><div class="kpi-value" style="color:${totalActQ===0&&totalExpQ>0?'var(--red)':totalActQ>0?'var(--navy)':'var(--text)'}">${totalActQ} <span style="font-size:14px;color:var(--text-muted)">/ ${totalExpQ} exp</span></div><div class="kpi-sub">Expected ${totalExpQ} units by today</div></div>`;
+}
+
+// ── PACKAGE LIST ─────────────────────────────────────────────────────────
+function renderPackages(packages){
+  const list=document.getElementById('pkg-list');
+  list.innerHTML=packages.map(pkg=>{
+    const color=pColor(pkg.actual_pct,pkg.expected_pct);
+    const diff=dateDiff(pkg.planned_end_date,pkg.forecasted_end_date);
+    return`<div class="pkg-row" id="pkgrow-${pkg.package.replace(/\s/g,'_')}" onclick="openModal('${pkg.package}')">
+      <div class="pkg-row-inner">
+        <div class="pr-cell pr-name-cell">
+          <div class="pkg-name">${pkg.package}</div>
+          <div class="pkg-meta">${pkg.total_vendors} vendor${pkg.total_vendors>1?'s':''} &nbsp;·&nbsp; PO ×${pkg.total_pos}</div>
+          <div style="margin-top:6px"><span class="status-badge ${sk(pkg.status)}">${pkg.status}</span></div>
+        </div>
+        <div class="pr-progress-cell">
+          <div class="prog-labels">
+            <span style="font-size:11px;color:var(--text-muted)">Completion Progress</span>
+            <span style="font-size:11px;color:var(--text-muted)">Target <b style="color:var(--text-sub)">${pkg.expected_pct}%</b></span>
+          </div>
+          <div class="prog-track">
+            <div class="prog-expected-fill" style="width:${Math.min(pkg.expected_pct,100)}%"></div>
+            <div class="prog-actual-fill ${color}" style="width:${Math.min(pkg.actual_pct,100)}%"></div>
+          </div>
+          <div class="prog-bottom">
+            <b style="font-size:15px;color:${color==='green'?'#1a7a4a':color==='amber'?'#92600a':'var(--red)'}">${pkg.actual_pct}%</b>
+            <span style="color:var(--text-muted)">${pkg.expected_pct>pkg.actual_pct?(pkg.expected_pct-pkg.actual_pct).toFixed(1)+'% behind target':'On / ahead of target'}</span>
+          </div>
+        </div>
+        <div class="pr-cell pr-stat" style="text-align:center">
+          <div class="pr-stat-val">${pkg.total_qty}</div>
+          <div class="pr-stat-lbl">Total Units</div>
+        </div>
+        <div class="pr-cell pr-stat">
+          <div class="pr-stat-val" style="color:${pkg.actual_qty_till_date===0&&pkg.expected_qty_till_date>0?'var(--red)':pkg.actual_qty_till_date>0?'#1a7a4a':'var(--text)'}">${pkg.actual_qty_till_date}</div>
+          <div class="pr-stat-lbl">Units Delivered</div>
+          <div class="pr-stat-sub">Exp: ${pkg.expected_qty_till_date} by today</div>
+        </div>
+        <div class="pr-cell">
+          <div class="pr-date-lbl">Planned End</div>
+          <div class="pr-date-val">${fmtDate(pkg.planned_end_date)}</div>
+        </div>
+        <div class="pr-cell" style="border-right:none">
+          <div class="pr-date-lbl">Forecasted End</div>
+          <div class="pr-date-val ${diff&&diff>30?'overrun':''}">${fmtDate(pkg.forecasted_end_date)}</div>
+          ${diff!==null?`<div class="pr-slip ${diff>0?'late':'ok'}">${diff>0?'▲ +'+diff+'d slip':diff<0?'▼ '+Math.abs(diff)+'d early':'On time'}</div>`:''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── MODAL ─────────────────────────────────────────────────────────────────
+function openModal(pkgName){
+  const packages=window._data.packages;
+  const pkg=packages.find(p=>p.package===pkgName);
+  if(!pkg)return;
+  document.querySelectorAll('.pkg-row').forEach(r=>r.classList.remove('active'));
+  const row=document.getElementById('pkgrow-'+pkgName.replace(/\s/g,'_'));
+  if(row)row.classList.add('active');
+  document.getElementById('modal-title').textContent=pkgName+' — Package Detail';
+  document.getElementById('modal-sub').textContent=`${pkg.total_vendors} Vendor${pkg.total_vendors>1?'s':''} · ${pkg.total_items} Floors · ${pkg.total_qty} Units · Forecast: ${fmtDate(pkg.forecasted_end_date)}`;
+  renderModalBody(pkg);
+  document.getElementById('modal-overlay').classList.add('visible');
+  document.body.style.overflow='hidden';
+}
+
+function renderModalBody(pkg){
+  const body=document.getElementById('modal-body');
+
+  // ── CRITICAL FLOORS (top) ──
+  const critHTML=pkg.top_critical_items.map(ci=>{
+    const diff=dateDiff(ci.planned_end_date,ci.forecasted_end_date);
+    const qtyPct=ci.total_qty>0?Math.min((ci.actual_qty_till_date/ci.expected_qty_till_date)*100,100):0;
+    const qtyBarClass=ci.actual_qty_till_date===0&&ci.expected_qty_till_date>0?'none':qtyPct>=100?'full':'';
+    return`<div class="critical-card ${sk(ci.status)}">
+      <div class="critical-floor">${ci.item_name}</div>
+      <div class="critical-vendor">${ci.vendor}</div>
+      <div class="critical-row"><span class="lbl">Status</span><span class="val ${ci.status==='High Risk'?'red':ci.status==='Delayed'?'amber':'green'}">${ci.status}</span></div>
+      <div class="critical-row"><span class="lbl">Planned End</span><span class="val">${fmtDate(ci.planned_end_date)}</span></div>
+      <div class="critical-row"><span class="lbl">Forecast End</span><span class="val ${diff&&diff>0?'red':''}">${fmtDate(ci.forecasted_end_date)}</span></div>
+      ${diff!==null?`<div class="critical-row"><span class="lbl">Forecast Slip</span><span class="val ${diff>0?'red':diff<0?'green':''}">${diff>0?'+'+diff+'d late':diff<0?Math.abs(diff)+'d early':'On time'}</span></div>`:''}
+      <div class="qty-bar-wrap">
+        <div class="qty-bar-label"><span>Units Delivered</span><span><b>${ci.actual_qty_till_date}</b> / ${ci.expected_qty_till_date} expected</span></div>
+        <div class="qty-bar-track"><div class="qty-bar-fill ${qtyBarClass}" style="width:${Math.min(ci.expected_qty_till_date>0?(ci.actual_qty_till_date/ci.expected_qty_till_date)*100:0,100)}%"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // ── VENDOR TABS ──
+  const tabsHTML=pkg.vendors.map((v,i)=>{
+    const c=pColor(v.actual_pct,v.expected_pct);
+    const dot=c==='green'?'🟢':c==='amber'?'🟡':'🔴';
+    return`<button class="vendor-tab${i===0?' active':''}" onclick="switchVendorTab(this,'vtab-${pkg.package.replace(/\s/g,'_')}-${i}')">${dot} ${v.vendor_name}</button>`;
+  }).join('');
+
+  // ── VENDOR CONTENT PANELS ──
+  const vendorPanels=pkg.vendors.map((v,i)=>{
+    // Group items by PO
+    const byPO={};
+    v.items.forEach(item=>{
+      const key=item.po_number+'||'+item.po_desc;
+      if(!byPO[key])byPO[key]=[];
+      byPO[key].push(item);
+    });
+
+    const poSections=Object.entries(byPO).map(([key,items])=>{
+      const [poNum,poDesc]=key.split('||');
+      const worstStatus=items.some(i=>i.status==='High Risk')?'High Risk':items.some(i=>i.status==='Delayed')?'Delayed':items.some(i=>i.status==='Medium Risk')?'Medium Risk':items.some(i=>i.status==='Low Risk')?'Low Risk':'On Track';
+      const rows=items.map(item=>{
+        const color=pColor(item.actual_pct,item.expected_pct);
+        const diff=dateDiff(item.planned_end_date,item.forecasted_end_date);
+        const qtyExpPct=item.total_qty>0?Math.min((item.expected_qty_till_date/item.total_qty)*100,100):0;
+        const qtyActPct=item.total_qty>0?Math.min((item.actual_qty_till_date/item.total_qty)*100,100):0;
+        const qtyFillColor=item.actual_qty_till_date===0&&item.expected_qty_till_date>0?'var(--red)':item.actual_qty_till_date>=item.expected_qty_till_date&&item.expected_qty_till_date>0?'var(--green)':'var(--amber)';
+        const milestone=item.most_delayed_milestone
+          ?`<div class="milestone-delayed">⚠ ${item.most_delayed_milestone}</div>`
+          :item.ongoing_milestone
+            ?`<div class="milestone-ongoing">${item.ongoing_milestone.split(',')[0].trim()}…</div>`
+            :'<span style="color:var(--text-muted)">—</span>';
+        return`<tr>
+          <td><div class="floor-name-big">${item.item_name}</div><div class="floor-status-row"><span class="status-badge ${sk(item.status)}">${item.status}</span></div></td>
+          <td>
+            <div class="inline-bar">
+              <div class="bar-track">
+                <div class="bar-expected-marker" style="left:${Math.min(item.expected_pct,100)}%"></div>
+                <div class="bar-fill ${color}" style="width:${Math.min(item.actual_pct,100)}%"></div>
+              </div>
+              <span class="bar-pct ${color}">${item.actual_pct}%</span>
+            </div>
+            <div style="font-size:9px;color:var(--text-muted);margin-top:3px">Target: ${item.expected_pct}%</div>
+          </td>
+          <td class="qty-cell">
+            <div class="qty-big">${item.actual_qty_till_date}<span style="font-size:10px;color:var(--text-muted)"> / ${item.expected_qty_till_date}</span></div>
+            <div class="qty-frac">of ${item.total_qty} total units</div>
+            <div class="qty-mini-bar"><div class="qty-mini-fill" style="width:${qtyActPct}%;background:${qtyFillColor}"></div></div>
+          </td>
+          <td>
+            <div class="date-main ${diff&&diff>30?'overrun':'ok'}">${fmtDate(item.forecasted_end_date)}</div>
+            ${diff!==null?`<div class="date-slip ${diff>0?'late':'ok'}">${diff>0?'▲ +'+diff+'d':diff<0?'▼ '+Math.abs(diff)+'d':'On time'}</div>`:''}
+          </td>
+          <td class="milestone-cell">${milestone}</td>
+        </tr>`;
+      }).join('');
+      return`<div class="po-section">
+        <div class="po-header">
+          <span class="po-number">PO: ${poNum}</span>
+          <span class="po-desc">${poDesc}</span>
+          <span class="po-badge"><span class="status-badge ${sk(worstStatus)}">${worstStatus}</span></span>
+        </div>
+        <table class="floor-table">
+          <thead><tr>
+            <th>Floor</th>
+            <th>Progress vs Target <span style="font-weight:400;opacity:0.7">(▏= target marker)</span></th>
+            <th class="right">Units Delivered / Expected</th>
+            <th>Forecast Date</th>
+            <th>Most Delayed Milestone</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+    }).join('');
+
+    const diff=dateDiff(v.planned_end_date,v.forecasted_end_date);
+    return`<div class="vendor-panel" id="vtab-${pkg.package.replace(/\s/g,'_')}-${i}" style="${i===0?'':'display:none'}">
+      <div class="vendor-body">
+        <div class="vendor-summary-strip">
+          <span><strong>${v.total_qty}</strong> total units</span><span class="sep">·</span>
+          <span>Expected: <strong>${v.expected_pct}%</strong></span><span class="sep">·</span>
+          <span>Actual: <strong style="color:${pColor(v.actual_pct,v.expected_pct)==='green'?'#1a7a4a':pColor(v.actual_pct,v.expected_pct)==='amber'?'#92600a':'var(--red)'}">${v.actual_pct}%</strong></span><span class="sep">·</span>
+          <span>Delivered: <strong>${v.actual_qty_till_date}</strong> / ${v.expected_qty_till_date} exp</span><span class="sep">·</span>
+          <span>Forecast: <strong style="color:${diff&&diff>30?'var(--red)':'var(--text)'}">${fmtDate(v.forecasted_end_date)}</strong>${diff&&diff>0?` <span style="color:var(--red);font-size:10px">(+${diff}d)</span>`:''}</span>
+        </div>
+        <div class="table-legend">
+          <strong style="color:var(--text-sub)">Legend:</strong>
+          <span><span class="tl-dot" style="background:var(--green)"></span> Progress bar: Green = on/ahead of target</span>
+          <span><span class="tl-dot" style="background:var(--amber)"></span> Amber = &lt;15% behind target</span>
+          <span><span class="tl-dot" style="background:var(--red)"></span> Red = significantly behind</span>
+          <span><span class="tl-dot" style="background:var(--amber);border-radius:1px;width:2px;height:10px"></span> ▏ = Target marker on bar</span>
+        </div>
+        ${poSections}
+      </div>
+    </div>`;
+  }).join('');
+
+  body.innerHTML=`
+    <div class="critical-section">
+      <div class="critical-header">
+        <span class="critical-dot"></span>
+        <span class="critical-title-text">Top Critical Floors</span>
+        <div class="critical-legend">
+          <span><span class="ld" style="background:var(--red)"></span> High Risk</span>
+          <span><span class="ld" style="background:var(--amber)"></span> Delayed</span>
+          <span><span class="ld" style="background:var(--green)"></span> On Track / Low Risk</span>
+          <span style="font-size:10px;color:var(--text-muted)">Left border color = floor status</span>
+        </div>
+      </div>
+      <div class="critical-grid">${critHTML}</div>
+    </div>
+    <div class="vendor-tabs-wrap">
+      <div class="vendor-tabs-header">${tabsHTML}</div>
+      ${vendorPanels}
+    </div>`;
+}
+
+function switchVendorTab(btn,panelId){
+  const wrap=btn.closest('.vendor-tabs-wrap');
+  wrap.querySelectorAll('.vendor-tab').forEach(t=>t.classList.remove('active'));
+  wrap.querySelectorAll('.vendor-panel').forEach(p=>p.style.display='none');
+  btn.classList.add('active');
+  document.getElementById(panelId).style.display='block';
+}
+
+// ── ZOOM ──────────────────────────────────────────────────────────────────
+let zoomLevel=100;
+function zoomModal(dir){
+  zoomLevel=Math.min(150,Math.max(60,zoomLevel+dir*10));
+  document.getElementById('modal-body').style.zoom=zoomLevel+'%';
+  document.getElementById('zoom-label').textContent=zoomLevel+'%';
+}
+
+document.getElementById('modal-close').addEventListener('click',()=>{
+  document.getElementById('modal-overlay').classList.remove('visible');
+  document.body.style.overflow='';
+  document.querySelectorAll('.pkg-row').forEach(r=>r.classList.remove('active'));
+  zoomLevel=100;
+  document.getElementById('modal-body').style.zoom='100%';
+  document.getElementById('zoom-label').textContent='100%';
+});
+document.getElementById('modal-overlay').addEventListener('click',e=>{
+  if(e.target===document.getElementById('modal-overlay')){
+    document.getElementById('modal-close').click();
+  }
+});
+
+// ── PROJECT SWITCHER ──────────────────────────────────────────────────────
+// When multiple projects exist, populate the dropdown with project names
+// and re-render renderKPIs + renderPackages for the selected project's data.
+// Currently single project — extend here when multi-project endpoint is available.
+function switchProject(projName){
+  loadProject(projName);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+async function loadData(){
+  try{
+    // Build allProjects from either live endpoint or embedded data
+    let allProjects={};
+    if(ENDPOINT_URL){
+      const r=await fetch(ENDPOINT_URL);
+      if(!r.ok)throw new Error(`HTTP ${r.status}`);
+      const resp=await r.json();
+      if(resp.error)throw new Error(resp.error);
+      // Expect endpoint to return { projects: [ {last_updated, data:{project,packages}}, ... ] }
+      // or fall back to single-project format
+      if(resp.projects){
+        resp.projects.forEach(p=>{ allProjects[p.data.project]=p; });
+      } else {
+        allProjects[resp.data.project]=resp;
+      }
+    } else {
+      allProjects=ALL_PROJECTS;
+    }
+
+    window._allProjects=allProjects;
+    const projNames=Object.keys(allProjects);
+
+    // Populate dropdown
+    const sel=document.getElementById('proj-select');
+    sel.innerHTML=projNames.map(n=>`<option value="${n}">${n}</option>`).join('');
+
+    // Load first project by default
+    loadProject(projNames[0]);
+
+    document.getElementById('loading-state').style.display='none';
+    document.getElementById('main-content').style.display='block';
+  }catch(err){
+    document.getElementById('loading-state').style.display='none';
+    document.getElementById('error-state').style.display='flex';
+    document.getElementById('error-message').textContent=`Could not load data: ${err.message}`;
+  }
+}
+
+function loadProject(projName){
+  const entry=window._allProjects[projName];
+  if(!entry)return;
+  window._data=entry.data;
+  if(entry.last_updated){
+    const d=new Date(entry.last_updated);
+    document.getElementById('last-updated-text').textContent=`Updated ${d.getDate()} ${MONTHS[d.getMonth()+1]} ${d.getFullYear()}, ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  }
+  renderKPIs(entry.data.packages);
+  renderPackages(entry.data.packages);
+  // Close any open modal when switching projects
+  document.getElementById('modal-overlay').classList.remove('visible');
+  document.body.style.overflow='';
+}
+
+loadData();
+</script>
+</body>
+</html>
