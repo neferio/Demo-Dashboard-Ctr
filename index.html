@@ -229,7 +229,7 @@ body{background:var(--canvas);color:var(--ink);font-family:var(--font);font-size
 .po-block.po-done{background:#edf8f1;border-color:#b9e2c8}
 .po-head{padding:12px 15px;background:var(--accent-soft)}
 .po-block.po-done .po-head{background:transparent}
-.po-istats{display:grid;grid-template-columns:1fr 1fr 1.4fr 1.1fr 1.1fr;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid var(--accent-line)}
+.po-istats{display:flex;flex-wrap:wrap;gap:12px 32px;margin-top:10px;padding-top:10px;border-top:1px solid var(--accent-line)}
 .po-block.po-done .po-istats{border-top-color:#cdead8}
 .po-block .item-tbl-wrap{border:none;border-top:1px solid var(--line-2);border-radius:0;margin-bottom:0}
 .floor-tbl.compact th{padding:0 12px 7px}
@@ -569,7 +569,7 @@ function renderPackages(pkgs){
           <div class="bullet-track"><div class="bullet-fill ${c}" style="width:${Math.min(pkg.actual_pct,100)}%"></div><div class="bullet-marker" style="left:${Math.min(pkg.expected_pct,100)}%"></div></div>
           <div class="bullet-gap ${c}">${pkg.actual_pct>=pkg.expected_pct?'On / ahead of target':(pkg.expected_pct-pkg.actual_pct).toFixed(0)+'% behind target'}</div>
         </div>
-        <div class="pc num"><span class="stat-val" style="color:${pkg.actual_qty_till_date===0&&pkg.expected_qty_till_date>0?'var(--red)':pkg.actual_qty_till_date>0?'var(--green)':'var(--ink)'}">${pkg.actual_qty_till_date} <span style="font-size:13px;font-weight:600;color:var(--ink-2)">/ ${pkg.total_qty}</span></span><div style="font-size:12.5px;font-weight:500;color:var(--ink);margin-top:3px">${pkg.expected_qty_till_date} expected till date</div></div>
+        <div class="pc num">${pkg.total_qty>0?`<span class="stat-val" style="color:${pkg.actual_qty_till_date===0&&pkg.expected_qty_till_date>0?'var(--red)':pkg.actual_qty_till_date>0?'var(--green)':'var(--ink)'}">${pkg.actual_qty_till_date} <span style="font-size:13px;font-weight:600;color:var(--ink-2)">/ ${pkg.total_qty}</span></span><div style="font-size:12.5px;font-weight:500;color:var(--ink);margin-top:3px">${pkg.expected_qty_till_date} expected till date</div>`:'<span class="slip-none">—</span>'}</div>
         <div class="pc num"><div class="dt-val">${fd(pkg.planned_end_date)}</div></div>
         <div class="pc num"><div class="dt-val ${dif&&dif>30?'late':''}">${fd(pkg.forecasted_end_date)}</div>${dif!==null?`<div class="dt-slip ${dif>0?'l':'ok'}">${dif>0?'+'+dif+'d est. slip':dif<0?Math.abs(dif)+'d early':'On time'}</div>`:''}</div>
         <div class="pc row-caret">›</div>
@@ -604,7 +604,7 @@ function renderVendors(){
           <div class="bullet-track"><div class="bullet-fill ${c}" style="width:${Math.min(v.actual_pct,100)}%"></div><div class="bullet-marker" style="left:${Math.min(v.expected_pct,100)}%"></div></div>
         </div>
         <div class="pc num"><span class="risk-val" style="color:${v.units_at_risk>0?'var(--red)':'var(--green)'}">${v.units_at_risk}</span><div style="font-size:10px;color:var(--ink-3)">units</div></div>
-        <div class="pc num"><span class="stat-val">${v.actual_qty_till_date} <span style="font-size:13px;font-weight:600;color:var(--ink-2)">/ ${v.total_qty}</span></span><div style="font-size:12.5px;font-weight:500;color:var(--ink);margin-top:3px">${v.expected_qty_till_date} expected till date</div></div>
+        <div class="pc num">${v.total_qty>0?`<span class="stat-val">${v.actual_qty_till_date} <span style="font-size:13px;font-weight:600;color:var(--ink-2)">/ ${v.total_qty}</span></span><div style="font-size:12.5px;font-weight:500;color:var(--ink);margin-top:3px">${v.expected_qty_till_date} expected till date</div>`:'<span class="slip-none">—</span>'}</div>
         <div class="pc row-caret">›</div>
       </div>
     </div>`;
@@ -720,9 +720,9 @@ function headerStats(items,opts){
   const risk=Math.max(eq-aq,0);
   return`
     <div><div class="hs-lbl">Progress</div><div class="hs-val ${cc}">${act}% <span class="dim">/ ${exp}% target</span></div></div>
-    <div><div class="hs-lbl">Delivered / Total</div><div class="hs-val">${aq} <span class="dim">/ ${tq}</span></div></div>
-    <div><div class="hs-lbl">Expected till date</div><div class="hs-val">${eq}</div></div>
-    ${opts.risk?`<div><div class="hs-lbl">Units at Risk</div><div class="hs-val ${risk>0?'r':'g'}">${risk}</div></div>`:''}
+    ${tq>0?`<div><div class="hs-lbl">Delivered / Total</div><div class="hs-val">${aq} <span class="dim">/ ${tq}</span></div></div>
+    <div><div class="hs-lbl">Expected till date</div><div class="hs-val">${eq}</div></div>`:''}
+    ${opts.risk&&tq>0?`<div><div class="hs-lbl">Units at Risk</div><div class="hs-val ${risk>0?'r':'g'}">${risk}</div></div>`:''}
     <div><div class="hs-lbl">Latest Forecast</div><div class="hs-val" style="font-size:13.5px">${fd(maxDate(items.map(i=>i.forecasted_end_date)))}</div></div>`;
 }
 function setModalHeader(o){
@@ -752,8 +752,8 @@ function xpCard(name,items,onclick,metaTxt){
     <div class="xp-pair">
       <div><div class="xp-pair-lbl">Actual</div><div class="xp-pair-val ${cc}">${act}%</div></div>
       <div><div class="xp-pair-lbl">Expected</div><div class="xp-pair-val" style="color:var(--ink-2)">${exp}%</div></div>
-      <div><div class="xp-pair-lbl">Delivered / Total</div><div class="xp-pair-val" style="font-size:15px"><b>${aq}</b><span style="font-weight:600;color:var(--ink)"> / </span><b>${totalQty}</b></div></div>
-      <div><div class="xp-pair-lbl">Exp. till date</div><div class="xp-pair-val" style="font-size:15px"><b>${eq}</b></div></div>
+      ${totalQty>0?`<div><div class="xp-pair-lbl">Delivered / Total</div><div class="xp-pair-val" style="font-size:15px"><b>${aq}</b><span style="font-weight:600;color:var(--ink)"> / </span><b>${totalQty}</b></div></div>
+      <div><div class="xp-pair-lbl">Exp. till date</div><div class="xp-pair-val" style="font-size:15px"><b>${eq}</b></div></div>`:''}
     </div>
     ${onclick?'<div class="xp-cta">View POs & items →</div>':''}
   </div>`;
@@ -761,11 +761,12 @@ function xpCard(name,items,onclick,metaTxt){
 // Compact item (lot) row — minor info only
 function itemTable(items){
   const rows=items.map(it=>{
+    const hasQty=it.total_qty>0;
     if(it.status==='Completed'){
       return`<tr class="row-done">
         <td><span class="f-name" style="font-size:13px">${it.item_name}</span></td>
         <td><span class="badge completed" style="font-size:11px">Completed</span></td>
-        <td colspan="5" class="done-cell">✓ ${it.actual_qty_till_date} unit${it.actual_qty_till_date!==1?'s':''} delivered</td>
+        <td colspan="5" class="done-cell">${hasQty?`✓ ${it.actual_qty_till_date} unit${it.actual_qty_till_date!==1?'s':''} delivered`:'✓ Completed'}</td>
       </tr>`;
     }
     const c2=pc(it.actual_pct,it.expected_pct);
@@ -775,8 +776,8 @@ function itemTable(items){
       <td><span class="f-name" style="font-size:13px">${it.item_name}</span></td>
       <td><span class="badge ${sk(it.status)}" style="font-size:11px">${it.status}</span></td>
       <td class="num"><span class="ibar-pct ${c2}" style="font-size:13px">${it.actual_pct}%</span> <span style="font-size:12.5px;font-weight:600;color:var(--ink)">/ ${it.expected_pct}%</span></td>
-      <td class="num" style="font-weight:700">${it.actual_qty_till_date}<span style="font-size:12px;font-weight:600;color:var(--ink)"> / ${it.total_qty}</span></td>
-      <td class="num">${it.expected_qty_till_date}</td>
+      <td class="num" style="font-weight:700">${hasQty?`${it.actual_qty_till_date}<span style="font-size:12px;font-weight:600;color:var(--ink)"> / ${it.total_qty}</span>`:'<span class="slip-none">—</span>'}</td>
+      <td class="num">${hasQty?it.expected_qty_till_date:'<span class="slip-none">—</span>'}</td>
       <td class="num">${fd(it.forecasted_end_date)}</td>
       <td class="num">${slip}</td>
     </tr>`;
@@ -807,12 +808,12 @@ function poSectionsCompact(items,showPkg){
           <span class="po-num">PO: ${poN}</span>
           <span class="po-desc">${poD}</span>
           ${pkgChip}
-          ${allDone?'<span class="po-done-note">✓ PO fully delivered</span>':`<span style="margin-left:auto"><span class="badge ${sk(ws)}">${ws}</span></span>`}
+          ${allDone?`<span class="po-done-note">✓ ${totalQty>0?'PO fully delivered':'PO completed'}</span>`:`<span style="margin-left:auto"><span class="badge ${sk(ws)}">${ws}</span></span>`}
         </div>
         <div class="po-istats">
           <div><div class="po-stat-lbl">Actual %</div><div class="po-stat-val" style="color:${cc==='g'?'var(--green)':cc==='a'?'var(--amber)':'var(--red)'}">${act}%</div></div>
           <div><div class="po-stat-lbl">Expected %</div><div class="po-stat-val" style="color:var(--ink-2)">${exp}%</div></div>
-          <div><div class="po-stat-lbl">Delivered / Total</div><div class="po-stat-val">${aq} <span style="font-weight:600;color:var(--ink)">/ ${totalQty}</span><span style="font-size:12.5px;font-weight:600;color:var(--ink)"> · ${eq} exp</span></div></div>
+          ${totalQty>0?`<div><div class="po-stat-lbl">Delivered / Total</div><div class="po-stat-val">${aq} <span style="font-weight:600;color:var(--ink)">/ ${totalQty}</span><span style="font-size:12.5px;font-weight:600;color:var(--ink)"> · ${eq} exp</span></div></div>`:''}
           <div><div class="po-stat-lbl">Planned End</div><div class="po-stat-val" style="font-size:13px">${fd(maxDate(its.map(i=>i.planned_end_date)))}</div></div>
           <div><div class="po-stat-lbl">Forecast End</div><div class="po-stat-val" style="font-size:13px">${fd(maxDate(its.map(i=>i.forecasted_end_date)))}</div></div>
         </div>
