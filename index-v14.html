@@ -11,8 +11,8 @@
   --accent:#2563eb;--accent-hover:#1d4ed8;--accent-soft:#eef4ff;--accent-line:#c9dbfa;
   --canvas:#f2f4f7;--surface:#ffffff;--surface-2:#f8f9fb;
   --line:#e9ebef;--line-2:#dcdfe5;
-  --ink:#0f1728;--ink-2:#4a5568;--ink-3:#8b96a5;
-  --hdr-bg:#0f1728;--hdr-ink:#f2f5fa;--hdr-muted:#94a0b3;
+  --ink:#0f1728;--ink-2:#3d4757;--ink-3:#5f6b7c;
+  --hdr-bg:#0f1728;--hdr-ink:#f2f5fa;--hdr-muted:#b3bfce;
   --red:#b93327;--red-soft:#faedeb;--green:#137a3d;--green-soft:#e9f6ee;
   --amber:#a15c07;--amber-soft:#faf3e4;
   --shadow-sm:0 1px 2px rgba(15,23,40,0.05);
@@ -29,10 +29,10 @@ body{background:var(--canvas);color:var(--ink);font-family:var(--font);font-size
 .hdr-left{display:flex;align-items:center;gap:12px}
 .hdr-logo svg{width:26px;height:26px;display:block}
 .hdr-div{width:1px;height:20px;background:rgba(255,255,255,0.14)}
-.hdr-sub{font-size:14px;color:var(--hdr-ink);font-weight:600}
+.hdr-sub{font-size:18px;color:var(--hdr-ink);font-weight:700;letter-spacing:-0.01em}
 .hdr-right{display:flex;align-items:center;gap:14px}
 .proj-wrap{position:relative}
-.proj-sel{appearance:none;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);border-radius:8px;color:var(--hdr-ink);font-size:13px;font-weight:600;font-family:var(--font);padding:7px 30px 7px 12px;cursor:pointer;outline:none;transition:all .15s}
+.proj-sel{appearance:none;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);border-radius:8px;color:var(--hdr-ink);font-size:14.5px;font-weight:600;font-family:var(--font);padding:8px 32px 8px 13px;cursor:pointer;outline:none;transition:all .15s}
 .proj-sel:hover{background:rgba(255,255,255,0.13)}
 .proj-sel option{background:var(--hdr-bg);color:var(--hdr-ink)}
 .proj-arr{position:absolute;right:11px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--hdr-muted);font-size:10px}
@@ -47,12 +47,12 @@ body{background:var(--canvas);color:var(--ink);font-family:var(--font);font-size
 /* VIEW TOGGLE */
 .view-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:12px}
 .view-toggle{display:inline-flex;background:var(--surface);border:1px solid var(--line-2);border-radius:10px;padding:3px;box-shadow:var(--shadow-sm)}
-.vt-btn{border:none;background:none;font-family:var(--font);font-size:13px;font-weight:600;color:var(--ink-3);padding:8px 18px;border-radius:8px;cursor:pointer;transition:all .15s}
-.vt-btn:hover{color:var(--ink-2)}
+.vt-btn{border:none;background:none;font-family:var(--font);font-size:13.5px;font-weight:600;color:var(--ink);padding:8px 18px;border-radius:8px;cursor:pointer;transition:all .15s}
+.vt-btn:hover{background:var(--surface-2)}
 .vt-btn.on{background:var(--accent);color:#fff}
 .filter-controls{display:flex;align-items:flex-end;gap:10px}
 .filter-group{display:flex;flex-direction:column;gap:4px}
-.filter-group label{font-size:11px;font-weight:600;color:var(--ink-3);padding-left:2px}
+.filter-group label{font-size:11.5px;font-weight:600;color:var(--ink-2);padding-left:2px}
 .filter-wrap{position:relative}
 .filter-wrap select{appearance:none;background:var(--surface);border:1px solid var(--line-2);border-radius:8px;color:var(--ink);font-size:13px;font-weight:500;font-family:var(--font);padding:8px 32px 8px 12px;cursor:pointer;outline:none;min-width:190px;transition:all .15s;box-shadow:var(--shadow-sm)}
 .filter-wrap select:hover,.filter-wrap select:focus{border-color:var(--accent)}
@@ -64,16 +64,16 @@ body{background:var(--canvas);color:var(--ink);font-family:var(--font);font-size
 .overview-card{display:grid;grid-template-columns:300px 1px 1fr;background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);overflow:hidden;margin-bottom:20px}
 .ov-div{background:var(--line)}
 .pulse-cell{display:flex;flex-direction:column;justify-content:center;padding:20px 24px}
-.pulse-lbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3);margin-bottom:9px}
+.pulse-lbl{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-2);margin-bottom:9px}
 .pulse-main{display:flex;align-items:baseline;gap:9px}
 .pulse-big{font-size:30px;font-weight:700;line-height:1;letter-spacing:-0.02em;color:var(--ink)}
 .pulse-vs{font-size:13px;color:var(--ink-3);font-weight:500}
 .pulse-sub{font-size:12px;color:var(--ink-2);margin-top:7px}
-.pulse-total{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:11px;padding-top:10px;border-top:1px solid var(--line);font-size:11.5px;color:var(--ink-3)}
+.pulse-total{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:11px;padding-top:10px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-2)}
 .pulse-total b{color:var(--ink);font-weight:700}
 .dist-cell{padding:20px 24px;display:flex;flex-direction:column;justify-content:center}
 .sd-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.sd-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3)}
+.sd-title{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-2)}
 .sd-count{font-size:12px;color:var(--ink-3)}
 .sd-bar{display:flex;height:18px;border-radius:5px;overflow:hidden;gap:2px}
 .sd-seg{min-width:20px;border-radius:3px;cursor:default;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;transition:opacity .15s}
@@ -91,7 +91,7 @@ body{background:var(--canvas);color:var(--ink);font-family:var(--font);font-size
 .search-in:hover,.search-in:focus{border-color:var(--accent)}
 .filter-wrap.sm select{min-width:170px;padding:8px 30px 8px 12px}
 .list-hdr{display:grid;padding:0 2px 8px}
-.list-hdr>div{padding:0 18px;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3)}
+.list-hdr>div{padding:0 18px;font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-2)}
 .list-hdr>div.num{text-align:right}
 .row-list{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
 .data-row{background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-md);overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow .15s,border-color .15s;cursor:pointer}
@@ -102,7 +102,7 @@ body{background:var(--canvas);color:var(--ink);font-family:var(--font);font-size
 .pc{padding:14px 18px}
 .pc.num{text-align:right}
 .row-name{font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-0.01em}
-.row-meta{font-size:11px;color:var(--ink-3);margin-top:2px}
+.row-meta{font-size:12px;color:var(--ink-2);margin-top:2px}
 .scoped-chip{display:inline-block;background:var(--accent-soft);color:var(--accent);font-size:10px;font-weight:700;padding:1px 7px;border-radius:5px;margin-left:4px;vertical-align:1px}
 .stat-val{font-size:15px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
 .risk-val{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
@@ -120,12 +120,12 @@ body{background:var(--canvas);color:var(--ink);font-family:var(--font);font-size
 .bullet-top{display:flex;align-items:baseline;justify-content:space-between}
 .bullet-actual{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
 .bullet-actual.g{color:var(--green)}.bullet-actual.a{color:var(--amber)}.bullet-actual.r{color:var(--red)}
-.bullet-target{font-size:11px;font-weight:500;color:var(--ink-3)}
+.bullet-target{font-size:13px;font-weight:600;color:var(--ink)}
 .bullet-track{position:relative;height:7px;background:var(--line);border-radius:4px;overflow:visible}
 .bullet-fill{position:absolute;top:0;left:0;height:100%;border-radius:4px;transition:width .4s ease}
 .bullet-fill.g{background:var(--green)}.bullet-fill.a{background:#d97706}.bullet-fill.r{background:var(--red)}
 .bullet-marker{position:absolute;top:-3px;width:2px;height:13px;background:var(--ink);border-radius:1px;transform:translateX(-50%);box-shadow:0 0 0 2px var(--surface)}
-.bullet-gap{font-size:10.5px;font-weight:600}
+.bullet-gap{font-size:12.5px;font-weight:600}
 .bullet-gap.g{color:var(--green)}.bullet-gap.a{color:var(--amber)}.bullet-gap.r{color:var(--red)}
 .pkg-empty{text-align:center;padding:48px;color:var(--ink-3);font-size:14px;background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-lg)}
 
@@ -151,12 +151,12 @@ body{background:var(--canvas);color:var(--ink);font-family:var(--font);font-size
 .hdr-back{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.16);color:var(--hdr-ink);font-size:15px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .15s}
 .hdr-back:hover{background:rgba(255,255,255,0.18)}
 .hdr-stats{display:flex;gap:34px;flex-wrap:wrap;margin-top:14px;padding-top:13px;border-top:1px solid rgba(255,255,255,0.1)}
-.hs-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--hdr-muted);font-weight:600;margin-bottom:3px}
+.hs-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#cdd6e1;font-weight:600;margin-bottom:3px}
 .hs-val{font-size:15px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums;white-space:nowrap}
-.hs-val .dim{color:var(--hdr-muted);font-weight:500;font-size:12px}
+.hs-val .dim{color:#cdd6e1;font-weight:500;font-size:13px}
 .hs-val.g{color:#4ade80}.hs-val.a{color:#fcd34d}.hs-val.r{color:#fca5a5}
 .modal-ttl{color:var(--hdr-ink);font-size:16px;font-weight:700}
-.modal-sub{color:var(--hdr-muted);font-size:12px;margin-top:2px}
+.modal-sub{color:var(--hdr-muted);font-size:13px;margin-top:2px}
 .modal-hdr-r{display:flex;align-items:center;gap:6px}
 .zm-btn,.m-close{width:29px;height:29px;border-radius:7px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);color:var(--hdr-ink);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .zm-btn:hover{background:rgba(255,255,255,0.16)}
@@ -196,12 +196,12 @@ body{background:var(--canvas);color:var(--ink);font-family:var(--font);font-size
 .xp-card:hover{border-color:var(--accent);box-shadow:var(--shadow-sm)}
 .xp-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:2px}
 .xp-name{font-size:13px;font-weight:700;color:var(--ink);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.xp-meta{font-size:11px;color:var(--ink-3);margin-bottom:14px}
+.xp-meta{font-size:12px;color:var(--ink-2);margin-bottom:14px}
 .xp-pair{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:12px}
-.xp-pair-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-3);font-weight:600;margin-bottom:2px}
+.xp-pair-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink);font-weight:700;margin-bottom:3px}
 .xp-pair-val{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
 .xp-pair-val.g{color:var(--green)}.xp-pair-val.a{color:var(--amber)}.xp-pair-val.r{color:var(--red)}
-.xp-cta{margin-top:12px;padding-top:11px;border-top:1px solid var(--line);font-size:11.5px;font-weight:600;color:var(--accent)}
+.xp-cta{margin-top:12px;padding-top:11px;border-top:1px solid var(--line);font-size:12px;font-weight:600;color:var(--accent)}
 .xp-row{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-2);margin-bottom:3px}
 .xp-row b{color:var(--ink);font-variant-numeric:tabular-nums}
 .xp-mini{margin-top:2px}
@@ -223,7 +223,7 @@ body{background:var(--canvas);color:var(--ink);font-family:var(--font);font-size
 .back-arrow{width:34px;height:34px;border-radius:9px;background:var(--surface);border:1px solid var(--line-2);color:var(--ink-2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;box-shadow:var(--shadow-sm);flex-shrink:0}
 .back-arrow:hover{border-color:var(--accent);color:var(--accent)}
 .detail-title{font-size:15px;font-weight:700;color:var(--ink)}
-.detail-sub{font-size:11.5px;color:var(--ink-3);margin-top:1px}
+.detail-sub{font-size:12px;color:var(--ink-2);margin-top:1px}
 /* connected PO block: header card + items as one unit */
 .po-block{border:1px solid var(--line-2);border-radius:var(--r-sm);overflow:hidden;background:var(--surface);box-shadow:var(--shadow-sm)}
 .po-block.po-done{background:#edf8f1;border-color:#b9e2c8}
@@ -241,13 +241,13 @@ body{background:var(--canvas);color:var(--ink);font-family:var(--font);font-size
 .po-done-note{font-size:12px;font-weight:600;color:var(--green);margin-left:auto}
 .po-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:11px;padding-top:11px;border-top:1px solid var(--line)}
 .po-card.po-done .po-stats{border-top-color:#cdeAD8}
-.po-stat-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-3);font-weight:600;margin-bottom:2px}
-.po-stat-val{font-size:14px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.po-stat-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink);font-weight:700;margin-bottom:3px}
+.po-stat-val{font-size:14.5px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
 /* ruled item table */
 .item-tbl-wrap{border:1px solid var(--line-2);border-radius:var(--r-sm);overflow:hidden;margin-bottom:16px;background:var(--surface)}
 .item-tbl{width:100%;border-collapse:collapse}
-.item-tbl th{background:var(--surface-2);font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-2);padding:9px 12px;text-align:left;border-bottom:1px solid var(--line-2);border-right:1px solid var(--line)}
-.item-tbl td{padding:10px 12px;font-size:12.5px;color:var(--ink);background:var(--surface);border-bottom:1px solid var(--line);border-right:1px solid var(--line);font-variant-numeric:tabular-nums}
+.item-tbl th{background:var(--surface-2);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--ink);padding:10px 12px;text-align:left;border-bottom:1px solid var(--line-2);border-right:1px solid var(--line)}
+.item-tbl td{padding:11px 12px;font-size:13.5px;color:var(--ink);background:var(--surface);border-bottom:1px solid var(--line);border-right:1px solid var(--line);font-variant-numeric:tabular-nums}
 .item-tbl th:last-child,.item-tbl td:last-child{border-right:none}
 .item-tbl tr:last-child td{border-bottom:none}
 .item-tbl th.num,.item-tbl td.num{text-align:right}
@@ -259,7 +259,7 @@ body{background:var(--canvas);color:var(--ink);font-family:var(--font);font-size
 /* lots table */
 .po-hdr{display:flex;align-items:center;gap:11px;padding:10px 13px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);margin-bottom:10px}
 .po-num{font-size:12px;font-weight:700;color:var(--accent)}
-.po-desc{font-size:12px;color:var(--ink-2)}
+.po-desc{font-size:12.5px;font-weight:500;color:var(--ink)}
 .po-badge{margin-left:auto}
 .po-section{padding-bottom:18px;margin-bottom:18px;border-bottom:1px solid var(--line-2)}
 .po-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
@@ -313,10 +313,6 @@ body{background:var(--canvas);color:var(--ink);font-family:var(--font);font-size
 <body>
 <header class="hdr">
   <div class="hdr-left">
-    <div class="hdr-logo">
-      <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="rgba(255,255,255,0.12)"/><path d="M8 10L16 22L24 10" stroke="#47c981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 10L16 17L20 10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity=".6"/></svg>
-    </div>
-    <div class="hdr-div"></div>
     <div class="hdr-sub">CtrlS Dashboard</div>
   </div>
   <div class="hdr-right">
@@ -542,7 +538,7 @@ function renderOverview(pkgs){
   const segs=SEV.filter(s=>c[s]).map(s=>`<div class="sd-seg" style="width:${c[s]/total*100}%;background:${colorFor(s)};color:${segText(s)}" title="${s}: ${c[s]} lots">${c[s]}</div>`).join('');
   const legend=SEV.filter(s=>c[s]).map(s=>`<div class="sd-leg-item"><span class="sd-leg-dot" style="background:${colorFor(s)}"></span>${s}</div>`).join('');
   document.getElementById('dist-cell').innerHTML=`
-    <div class="sd-top"><span class="sd-title">Lot Status Distribution <span style="text-transform:none;letter-spacing:0;font-weight:500;color:var(--ink-3)">(Lot = Item in MMT terminology)</span></span><span class="sd-count">${total} lots across ${pkgs.length} packages</span></div>
+    <div class="sd-top"><span class="sd-title">Lot Status Distribution <span style="text-transform:none;letter-spacing:0;font-weight:500;color:var(--ink-2)">(Lot = Item in MMT terminology)</span></span><span class="sd-count">${total} lots across ${pkgs.length} packages</span></div>
     <div class="sd-bar">${segs}</div><div class="sd-legend">${legend}</div>`;
 }
 
@@ -573,7 +569,7 @@ function renderPackages(pkgs){
           <div class="bullet-track"><div class="bullet-fill ${c}" style="width:${Math.min(pkg.actual_pct,100)}%"></div><div class="bullet-marker" style="left:${Math.min(pkg.expected_pct,100)}%"></div></div>
           <div class="bullet-gap ${c}">${pkg.actual_pct>=pkg.expected_pct?'On / ahead of target':(pkg.expected_pct-pkg.actual_pct).toFixed(0)+'% behind target'}</div>
         </div>
-        <div class="pc num"><span class="stat-val" style="color:${pkg.actual_qty_till_date===0&&pkg.expected_qty_till_date>0?'var(--red)':pkg.actual_qty_till_date>0?'var(--green)':'var(--ink)'}">${pkg.actual_qty_till_date} <span style="font-size:12px;font-weight:500;color:var(--ink-3)">/ ${pkg.total_qty}</span></span><div style="font-size:10.5px;color:var(--ink-2);margin-top:2px">${pkg.expected_qty_till_date} expected till date</div></div>
+        <div class="pc num"><span class="stat-val" style="color:${pkg.actual_qty_till_date===0&&pkg.expected_qty_till_date>0?'var(--red)':pkg.actual_qty_till_date>0?'var(--green)':'var(--ink)'}">${pkg.actual_qty_till_date} <span style="font-size:13px;font-weight:600;color:var(--ink-2)">/ ${pkg.total_qty}</span></span><div style="font-size:12.5px;font-weight:500;color:var(--ink);margin-top:3px">${pkg.expected_qty_till_date} expected till date</div></div>
         <div class="pc num"><div class="dt-val">${fd(pkg.planned_end_date)}</div></div>
         <div class="pc num"><div class="dt-val ${dif&&dif>30?'late':''}">${fd(pkg.forecasted_end_date)}</div>${dif!==null?`<div class="dt-slip ${dif>0?'l':'ok'}">${dif>0?'+'+dif+'d est. slip':dif<0?Math.abs(dif)+'d early':'On time'}</div>`:''}</div>
         <div class="pc row-caret">›</div>
@@ -608,7 +604,7 @@ function renderVendors(){
           <div class="bullet-track"><div class="bullet-fill ${c}" style="width:${Math.min(v.actual_pct,100)}%"></div><div class="bullet-marker" style="left:${Math.min(v.expected_pct,100)}%"></div></div>
         </div>
         <div class="pc num"><span class="risk-val" style="color:${v.units_at_risk>0?'var(--red)':'var(--green)'}">${v.units_at_risk}</span><div style="font-size:10px;color:var(--ink-3)">units</div></div>
-        <div class="pc num"><span class="stat-val">${v.actual_qty_till_date} <span style="font-size:12px;font-weight:500;color:var(--ink-3)">/ ${v.total_qty}</span></span><div style="font-size:10.5px;color:var(--ink-2);margin-top:2px">${v.expected_qty_till_date} expected till date</div></div>
+        <div class="pc num"><span class="stat-val">${v.actual_qty_till_date} <span style="font-size:13px;font-weight:600;color:var(--ink-2)">/ ${v.total_qty}</span></span><div style="font-size:12.5px;font-weight:500;color:var(--ink);margin-top:3px">${v.expected_qty_till_date} expected till date</div></div>
         <div class="pc row-caret">›</div>
       </div>
     </div>`;
@@ -756,7 +752,7 @@ function xpCard(name,items,onclick,metaTxt){
     <div class="xp-pair">
       <div><div class="xp-pair-lbl">Actual</div><div class="xp-pair-val ${cc}">${act}%</div></div>
       <div><div class="xp-pair-lbl">Expected</div><div class="xp-pair-val" style="color:var(--ink-2)">${exp}%</div></div>
-      <div><div class="xp-pair-lbl">Delivered / Total</div><div class="xp-pair-val" style="font-size:15px"><b>${aq}</b><span style="font-weight:500;color:var(--ink-3)"> / </span><b>${totalQty}</b></div></div>
+      <div><div class="xp-pair-lbl">Delivered / Total</div><div class="xp-pair-val" style="font-size:15px"><b>${aq}</b><span style="font-weight:600;color:var(--ink)"> / </span><b>${totalQty}</b></div></div>
       <div><div class="xp-pair-lbl">Exp. till date</div><div class="xp-pair-val" style="font-size:15px"><b>${eq}</b></div></div>
     </div>
     ${onclick?'<div class="xp-cta">View POs & items →</div>':''}
@@ -767,8 +763,8 @@ function itemTable(items){
   const rows=items.map(it=>{
     if(it.status==='Completed'){
       return`<tr class="row-done">
-        <td><span class="f-name" style="font-size:12px">${it.item_name}</span></td>
-        <td><span class="badge completed" style="font-size:10px">Completed</span></td>
+        <td><span class="f-name" style="font-size:13px">${it.item_name}</span></td>
+        <td><span class="badge completed" style="font-size:11px">Completed</span></td>
         <td colspan="5" class="done-cell">✓ ${it.actual_qty_till_date} unit${it.actual_qty_till_date!==1?'s':''} delivered</td>
       </tr>`;
     }
@@ -776,10 +772,10 @@ function itemTable(items){
     const d2=dd(it.planned_end_date,it.forecasted_end_date);
     const slip=d2===null?'<span class="slip-none">—</span>':d2>0?`<span class="slip-late">+${d2}d</span>`:d2<0?`<span class="slip-early">${Math.abs(d2)}d early</span>`:'<span class="slip-none">On time</span>';
     return`<tr>
-      <td><span class="f-name" style="font-size:12px">${it.item_name}</span></td>
-      <td><span class="badge ${sk(it.status)}" style="font-size:10px">${it.status}</span></td>
-      <td class="num"><span class="ibar-pct ${c2}" style="font-size:12px">${it.actual_pct}%</span> <span style="font-size:10.5px;color:var(--ink-3)">/ ${it.expected_pct}%</span></td>
-      <td class="num" style="font-weight:700">${it.actual_qty_till_date}<span style="font-size:10px;font-weight:400;color:var(--ink-3)"> / ${it.total_qty}</span></td>
+      <td><span class="f-name" style="font-size:13px">${it.item_name}</span></td>
+      <td><span class="badge ${sk(it.status)}" style="font-size:11px">${it.status}</span></td>
+      <td class="num"><span class="ibar-pct ${c2}" style="font-size:13px">${it.actual_pct}%</span> <span style="font-size:12.5px;font-weight:600;color:var(--ink)">/ ${it.expected_pct}%</span></td>
+      <td class="num" style="font-weight:700">${it.actual_qty_till_date}<span style="font-size:12px;font-weight:600;color:var(--ink)"> / ${it.total_qty}</span></td>
       <td class="num">${it.expected_qty_till_date}</td>
       <td class="num">${fd(it.forecasted_end_date)}</td>
       <td class="num">${slip}</td>
@@ -816,7 +812,7 @@ function poSectionsCompact(items,showPkg){
         <div class="po-istats">
           <div><div class="po-stat-lbl">Actual %</div><div class="po-stat-val" style="color:${cc==='g'?'var(--green)':cc==='a'?'var(--amber)':'var(--red)'}">${act}%</div></div>
           <div><div class="po-stat-lbl">Expected %</div><div class="po-stat-val" style="color:var(--ink-2)">${exp}%</div></div>
-          <div><div class="po-stat-lbl">Delivered / Total</div><div class="po-stat-val">${aq} <span style="font-weight:500;color:var(--ink-3)">/ ${totalQty}</span><span style="font-size:10.5px;font-weight:500;color:var(--ink-3)"> · ${eq} exp</span></div></div>
+          <div><div class="po-stat-lbl">Delivered / Total</div><div class="po-stat-val">${aq} <span style="font-weight:600;color:var(--ink)">/ ${totalQty}</span><span style="font-size:12.5px;font-weight:600;color:var(--ink)"> · ${eq} exp</span></div></div>
           <div><div class="po-stat-lbl">Planned End</div><div class="po-stat-val" style="font-size:13px">${fd(maxDate(its.map(i=>i.planned_end_date)))}</div></div>
           <div><div class="po-stat-lbl">Forecast End</div><div class="po-stat-val" style="font-size:13px">${fd(maxDate(its.map(i=>i.forecasted_end_date)))}</div></div>
         </div>
