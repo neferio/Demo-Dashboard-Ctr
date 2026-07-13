@@ -928,7 +928,9 @@ async function init(){
     window._allP=all;
     const names=Object.keys(all);
     document.getElementById('proj-sel').innerHTML=names.map(n=>`<option value="${n}">${n}</option>`).join('');
-    loadProject(names[0]);
+    const defProj=names.includes('CtrlS Mumbai')?'CtrlS Mumbai':names[0];
+    document.getElementById('proj-sel').value=defProj;
+    loadProject(defProj);
     document.getElementById('loading').style.display='none';
     document.getElementById('main').style.display='block';
   }catch(e){
